@@ -9,15 +9,16 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#f0f6ff;color:#17365d}
 header{background:#1265db;color:white;padding:20px;font-size:23px;font-weight:bold}
-.container{max-width:420px;margin:35px auto;padding:18px}
-.card{background:white;padding:25px;border-radius:16px;box-shadow:0 4px 20px #d4e2f5}
-h2{text-align:center;color:#1265db}
-input{width:100%;padding:14px;margin:9px 0;border:1px solid #ccd9ed;border-radius:9px}
-button{width:100%;padding:14px;background:#1265db;color:white;border:0;border-radius:9px;margin-top:12px;font-size:16px}
-.link{text-align:center;color:#1265db;cursor:pointer;margin-top:18px}
+.container{max-width:600px;margin:20px auto;padding:15px}
+.card{background:white;padding:20px;border-radius:15px;box-shadow:0 3px 15px #d4e2f5;margin-bottom:15px}
+h2{color:#1265db;text-align:center}
+input,select{width:100%;padding:13px;margin:8px 0;border:1px solid #ccd9ed;border-radius:8px}
+button{padding:13px;background:#1265db;color:white;border:0;border-radius:8px;width:100%;margin-top:10px;font-size:15px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:15px}
+nav button{width:auto;flex:1;padding:12px 5px}
 .hidden{display:none}
-#dashboard{max-width:600px;margin:25px auto;padding:15px}
-.stat{background:#e1efff;padding:20px;border-radius:12px;margin:12px 0}
+.stat{background:#e1efff;padding:18px;border-radius:10px;margin:10px 0}
+.item{padding:12px;border-bottom:1px solid #ddd}
 small{color:#61758d}
 </style>
 </head>
@@ -25,100 +26,140 @@ small{color:#61758d}
 
 <header>⚡ SMM PANNAL</header>
 
-<div class="container" id="auth">
-
-<div class="card" id="login">
-<h2>Welcome Back!</h2>
-<p align="center">Login to SMM PANNAL</p>
-<form id="loginForm">
-<input type="email" id="loginEmail" placeholder="Email Address" required>
-<input type="password" id="loginPass" placeholder="Password" required>
-<button type="submit">Login</button>
-</form>
-<div class="link" onclick="showSignup()">New User? Create Account</div>
-</div>
-
-<div class="card hidden" id="signup">
-<h2>Create Account</h2>
-<form id="signupForm">
-<input id="name" placeholder="Full Name" required>
-<input type="email" id="email" placeholder="Email Address" required>
-<input type="password" id="password" placeholder="Create Password (min 8 characters)" minlength="8" required>
-<button type="submit">Sign Up</button>
-</form>
-<div class="link" onclick="showLogin()">Already have account? Login</div>
-</div>
-
-</div>
-
-<div id="dashboard" class="hidden">
+<div class="container" id="login">
 <div class="card">
-<h2>Welcome to SMM PANNAL!</h2>
+<h2>Welcome to SMM PANNAL</h2>
+<input id="userName" placeholder="Your Name">
+<button onclick="enter()">Continue to Demo</button>
+<small>This is a website preview. No real account is created.</small>
+</div>
+</div>
+
+<div class="container hidden" id="app">
+
+<div class="card">
+<h2>Welcome!</h2>
 <p id="welcome"></p>
 <div class="stat">Wallet Balance: ₹0</div>
-<div class="stat">Total Orders: 0</div>
-<p><small>This is a demo dashboard.</small></p>
-<button onclick="logout()">Logout</button>
+<div class="stat">Total Orders: <span id="total">0</span></div>
 </div>
+
+<nav>
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('services')">Services</button>
+<button onclick="showPage('order')">New Order</button>
+<button onclick="showPage('history')">History</button>
+</nav>
+
+<div id="home" class="card">
+<h2>Dashboard</h2>
+<p>Welcome to your SMM PANNAL dashboard.</p>
+<p>Choose a service and try a demo order.</p>
+</div>
+
+<div id="services" class="card hidden">
+<h2>Our Services</h2>
+<div class="item">Instagram Marketing - Demo</div>
+<div class="item">YouTube Promotion - Demo</div>
+<div class="item">Facebook Marketing - Demo</div>
+<div class="item">Social Media Content - Demo</div>
+</div>
+
+<div id="order" class="card hidden">
+<h2>New Demo Order</h2>
+<form id="orderForm">
+<label>Select Service</label>
+<select id="service" required>
+<option value="">Choose Service</option>
+<option>Instagram Marketing</option>
+<option>YouTube Promotion</option>
+<option>Facebook Marketing</option>
+<option>Social Media Content</option>
+</select>
+<label>Link</label>
+<input id="link" type="url" placeholder="Enter your page or post link" required>
+<label>Quantity</label>
+<input id="quantity" type="number" min="1" max="1000" placeholder="Enter quantity" required>
+<button type="submit">Submit Demo Order</button>
+</form>
+<small>Demo only. No real service or payment is processed.</small>
+</div>
+
+<div id="history" class="card hidden">
+<h2>Order History</h2>
+<div id="orders">No orders yet.</div>
+</div>
+
+<button onclick="logout()">Logout</button>
 </div>
 
 <script>
-function showSignup(){
-document.getElementById('login').classList.add('hidden');
-document.getElementById('signup').classList.remove('hidden');
+function enter(){
+let name=document.getElementById('userName').value.trim();
+if(!name){alert('Enter your name');return;}
+sessionStorage.setItem('demo_name',name);
+openApp();
 }
-function showLogin(){
-document.getElementById('signup').classList.add('hidden');
+
+function openApp(){
+let name=sessionStorage.getItem('demo_name');
+if(!name)return;
+document.getElementById('login').classList.add('hidden');
+document.getElementById('app').classList.remove('hidden');
+document.getElementById('welcome').innerText='Hello, '+name;
+showPage('home');
+updateOrders();
+}
+
+function showPage(page){
+['home','services','order','history'].forEach(id=>{
+document.getElementById(id).classList.add('hidden');
+});
+document.getElementById(page).classList.remove('hidden');
+if(page==='history')updateOrders();
+}
+
+function getOrders(){
+return JSON.parse(localStorage.getItem('demo_orders')||'[]');
+}
+
+document.getElementById('orderForm').addEventListener('submit',function(e){
+e.preventDefault();
+let orders=getOrders();
+orders.push({
+service:document.getElementById('service').value,
+link:document.getElementById('link').value,
+quantity:document.getElementById('quantity').value,
+status:'Demo'
+});
+localStorage.setItem('demo_orders',JSON.stringify(orders));
+alert('Demo order added!');
+this.reset();
+updateOrders();
+showPage('history');
+});
+
+function updateOrders(){
+let orders=getOrders();
+document.getElementById('total').innerText=orders.length;
+let box=document.getElementById('orders');
+if(!orders.length){box.innerText='No orders yet.';return;}
+box.innerHTML='';
+orders.forEach((o,i)=>{
+let div=document.createElement('div');
+div.className='item';
+div.textContent='Order #'+(i+1)+' | '+o.service+' | Quantity: '+o.quantity+' | '+o.status;
+box.appendChild(div);
+});
+}
+
+function logout(){
+sessionStorage.removeItem('demo_name');
+document.getElementById('app').classList.add('hidden');
 document.getElementById('login').classList.remove('hidden');
 }
 
-function getUsers(){
-return JSON.parse(localStorage.getItem('smm_users')||'[]');
-}
-
-document.getElementById('signupForm').addEventListener('submit',function(e){
-e.preventDefault();
-let users=getUsers();
-let name=document.getElementById('name').value.trim();
-let email=document.getElementById('email').value.trim().toLowerCase();
-let password=document.getElementById('password').value;
-
-if(users.some(u=>u.email===email)){
-alert('This email is already registered!');
-return;
-}
-users.push({name,email,password});
-localStorage.setItem('smm_users',JSON.stringify(users));
-alert('Demo account created! Please login.');
-this.reset();
-showLogin();
-});
-
-document.getElementById('loginForm').addEventListener('submit',function(e){
-e.preventDefault();
-let email=document.getElementById('loginEmail').value.trim().toLowerCase();
-let password=document.getElementById('loginPass').value;
-let user=getUsers().find(u=>u.email===email&&u.password===password);
-
-if(!user){alert('Invalid email or password');return;}
-sessionStorage.setItem('smm_current',user.name);
-openDashboard();
-});
-
-function openDashboard(){
-let name=sessionStorage.getItem('smm_current');
-if(!name)return;
-document.getElementById('auth').classList.add('hidden');
-document.getElementById('dashboard').classList.remove('hidden');
-document.getElementById('welcome').innerText='Hello, '+name;
-}
-function logout(){
-sessionStorage.removeItem('smm_current');
-document.getElementById('dashboard').classList.add('hidden');
-document.getElementById('auth').classList.remove('hidden');
-showLogin();
-}
-openDashboard();
+openApp();
 </script>
 </body>
 </html>
