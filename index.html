@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prince SMM</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Arial,sans-serif;
+ background:#f4f8ff;color:#18345c
+}
+header{
+ background:#1265db;color:white;
+ padding:20px;border-radius:0 0 22px 22px
+}
+nav{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:24px;font-weight:bold}
+nav a{color:white;text-decoration:none}
+.hero{padding:30px 20px}
+.hero h1{font-size:32px;color:#125bc4}
+.btn{
+ display:inline-block;background:#1265db;
+ color:white;padding:12px 22px;
+ border:0;border-radius:9px;
+ text-decoration:none;cursor:pointer
+}
+.container{padding:15px}
+.card{
+ background:white;padding:18px;
+ border-radius:15px;margin-bottom:15px;
+ box-shadow:0 3px 15px #dce8f8
+}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card h3{margin-top:5px}
+input,select,textarea{
+ width:100%;padding:13px;margin:8px 0;
+ border:1px solid #ccd9ed;border-radius:8px;
+ font-size:15px
+}
+button{font-size:15px}
+.section-title{color:#1459b6}
+.dashboard{display:none}
+.stat{background:#e7f1ff;padding:15px;border-radius:12px}
+.stat h2{color:#1265db}
+footer{text-align:center;padding:25px;color:#687b97}
+</style>
+</head>
+<body>
+
+<header>
+<nav>
+<div class="logo">⚡ PRINCE SMM</div>
+<a href="#services">Services</a>
+</nav>
+</header>
+
+<div id="home">
+<section class="hero">
+<h1>Grow Your Social Media 🚀</h1>
+<p>Welcome to Prince SMM. Your Social Media Marketing Platform.</p>
+<button class="btn" onclick="showDashboard()">Open Dashboard</button>
+</section>
+
+<div class="container">
+<h2 class="section-title" id="services">Our Services</h2>
+<div class="grid">
+<div class="card"><h3>📸 Instagram</h3><p>Post Design</p></div>
+<div class="card"><h3>▶️ YouTube</h3><p>Thumbnail Design</p></div>
+<div class="card"><h3>📘 Facebook</h3><p>Creative Posts</p></div>
+<div class="card"><h3>✈️ Telegram</h3><p>Channel Graphics</p></div>
+</div>
+
+<div class="card">
+<h2>Our Features</h2>
+<p>✓ Easy Dashboard</p>
+<p>✓ Service Management</p>
+<p>✓ Order Requests</p>
+<p>✓ Customer Support</p>
+</div>
+
+<div class="card">
+<h2>Contact Us</h2>
+<p>Need help? Contact Prince SMM Support.</p>
+</div>
+</div>
+</div>
+
+<div class="container dashboard" id="dashboard">
+<h2>Welcome to Prince SMM</h2>
+<div class="grid">
+<div class="stat"><p>Wallet Balance</p><h2>₹0</h2></div>
+<div class="stat"><p>Total Orders</p><h2 id="count">0</h2></div>
+</div>
+
+<div class="card">
+<h2>New Service Request</h2>
+<form id="orderForm">
+<label>Platform</label>
+<select id="platform">
+<option>Instagram</option>
+<option>YouTube</option>
+<option>Facebook</option>
+<option>Telegram</option>
+</select>
+
+<label>Service</label>
+<select id="service">
+<option>Thumbnail Design</option>
+<option>Video Editing</option>
+<option>Post Designing</option>
+<option>SEO Consultation</option>
+</select>
+
+<label>Your Details</label>
+<textarea id="details" rows="4" placeholder="Describe your requirements"></textarea>
+
+<button class="btn" type="submit">Submit Request</button>
+</form>
+<p id="message"></p>
+</div>
+
+<div class="card">
+<h3>Order History</h3>
+<div id="history">No orders yet.</div>
+</div>
+<button class="btn" onclick="showHome()">Back to Home</button>
+</div>
+
+<footer>
+© 2026 Prince SMM | All Rights Reserved
+</footer>
+
+<script>
+let orders=0;
+
+function showDashboard(){
+ document.getElementById("home").style.display="none";
+ document.getElementById("dashboard").style.display="block";
+ window.scrollTo(0,0);
+}
+
+function showHome(){
+ document.getElementById("home").style.display="block";
+ document.getElementById("dashboard").style.display="none";
+ window.scrollTo(0,0);
+}
+
+document.getElementById("orderForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ let p=document.getElementById("platform").value;
+ let s=document.getElementById("service").value;
+ let d=document.getElementById("details").value.trim();
+
+ if(!d){alert("Please enter your details");return;}
+
+ orders++;
+ document.getElementById("count").innerText=orders;
+ document.getElementById("message").innerText="Request submitted in this demo!";
+ document.getElementById("history").innerHTML=
+ "<p>"+p+" - "+s+"</p>"+document.getElementById("history").innerHTML;
+ this.reset();
+});
+</script>
+</body>
+</html>
