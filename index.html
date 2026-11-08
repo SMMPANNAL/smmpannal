@@ -224,17 +224,35 @@ async function authenticate(){
 }
 
 async function loadServices(){
- const select=document.getElementById("serviceSelect");
- const {data,error}=await db.from("services")
-  .select("id,name,platform,description,price")
-  .eq("active",true).order("name");
+ const select = document.getElementById("serviceSelect");
 
- if(error){select.innerHTML='<option value="">Services unavailable</option>';return;}
- select.innerHTML='<option value="">Choose a service</option>';
- (data||[]).forEach(s=>{
+ const {data,error} = await db
+  .from("services")
+  .select("id,name,platform,description,price")
+  .eq("active",true)
+  .order("name");
+
+ if(error){
+  console.error("Services Error:",error);
+  select.innerHTML =
+   '<option value="">Error: '+error.message+'</option>';
+  return;
+ }
+
+ if(!data || data.length === 0){
+  select.innerHTML =
+   '<option value="">No active services found</option>';
+  return;
+ }
+
+ select.innerHTML =
+  '<option value="">Choose a service</option>';
+
+ data.forEach(s=>{
   const opt=document.createElement("option");
   opt.value=s.id;
-  opt.textContent=s.platform+" - "+s.name+" (₹"+s.price+")";
+  opt.textContent=
+   s.platform+" - "+s.name+" (₹"+s.price+")";
   select.appendChild(opt);
  });
 }
