@@ -1,166 +1,353 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prince SMM</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SMM PANNAL</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;font-family:Arial,sans-serif;
- background:#f4f8ff;color:#18345c
-}
-header{
- background:#1265db;color:white;
- padding:20px;border-radius:0 0 22px 22px
-}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f7ff;color:#19345b}
+header{background:#1265db;color:white;padding:18px 20px}
 nav{display:flex;justify-content:space-between;align-items:center}
 .logo{font-size:24px;font-weight:bold}
-nav a{color:white;text-decoration:none}
-.hero{padding:30px 20px}
-.hero h1{font-size:32px;color:#125bc4}
-.btn{
- display:inline-block;background:#1265db;
- color:white;padding:12px 22px;
- border:0;border-radius:9px;
- text-decoration:none;cursor:pointer
-}
-.container{padding:15px}
-.card{
- background:white;padding:18px;
- border-radius:15px;margin-bottom:15px;
- box-shadow:0 3px 15px #dce8f8
-}
+button{cursor:pointer;font-size:15px}
+.btn{background:#1265db;color:white;border:0;padding:12px 18px;border-radius:9px}
+.btn2{background:white;color:#1265db;border:1px solid #1265db;padding:11px 16px;border-radius:9px}
+.container{max-width:850px;margin:auto;padding:16px}
+.hero{padding:35px 20px;text-align:center;background:#e5efff}
+.hero h1{color:#125bc4;font-size:32px}
+.card{background:white;padding:18px;border-radius:14px;margin:14px 0;box-shadow:0 3px 14px #dce7f7}
+input,select,textarea{width:100%;padding:13px;margin:8px 0 14px;border:1px solid #ccd9ed;border-radius:8px;font-size:15px}
+label{font-weight:bold;font-size:14px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card h3{margin-top:5px}
-input,select,textarea{
- width:100%;padding:13px;margin:8px 0;
- border:1px solid #ccd9ed;border-radius:8px;
- font-size:15px
-}
-button{font-size:15px}
-.section-title{color:#1459b6}
-.dashboard{display:none}
-.stat{background:#e7f1ff;padding:15px;border-radius:12px}
-.stat h2{color:#1265db}
+.stat{background:#e7f1ff;padding:16px;border-radius:12px}
+.stat h2{color:#1265db;margin:8px 0}
+.hidden{display:none!important}
+.small{font-size:13px;color:#687b97}
+.status{padding:10px;border-radius:8px;background:#eaf2ff;margin:10px 0}
 footer{text-align:center;padding:25px;color:#687b97}
+h2{color:#1459b6}
+.item{border-bottom:1px solid #e5eaf2;padding:12px 0}
 </style>
 </head>
+
 <body>
 
 <header>
 <nav>
-<div class="logo"> SMM PANNAL</div>
-<a href="#services">Services</a>
+<div class="logo">SMM PANNAL</div>
+<div id="navUser" class="small" style="color:white">Welcome</div>
 </nav>
 </header>
 
-<div id="home">
-<section class="hero">
+<section id="home">
+<div class="hero">
 <h1>Grow Your Social Media 🚀</h1>
-<p>Welcome to Prince SMM. Your Social Media Marketing Platform.</p>
-<button class="btn" onclick="showDashboard()">Open Dashboard</button>
-</section>
+<p>Welcome to SMM PANNAL</p>
+<p>Creative Social Media Services</p>
+<button class="btn" onclick="showAuth('signup')">Get Started</button>
+<button class="btn2" onclick="showAuth('login')">Login</button>
+</div>
 
 <div class="container">
-<h2 class="section-title" id="services">Our Services</h2>
+<h2>Our Services</h2>
 <div class="grid">
-<div class="card"><h3>📸 Instagram</h3><p>Post Design</p></div>
-<div class="card"><h3>▶️ YouTube</h3><p>Thumbnail Design</p></div>
-<div class="card"><h3>📘 Facebook</h3><p>Creative Posts</p></div>
-<div class="card"><h3>✈️ Telegram</h3><p>Channel Graphics</p></div>
+<div class="card">📸 <b>Instagram</b><p>Post Design</p></div>
+<div class="card">▶️ <b>YouTube</b><p>Thumbnail Design</p></div>
+<div class="card">📘 <b>Facebook</b><p>Creative Posts</p></div>
+<div class="card">✈️ <b>Telegram</b><p>Channel Graphics</p></div>
 </div>
-
 <div class="card">
-<h2>Our Features</h2>
-<p>✓ Easy Dashboard</p>
-<p>✓ Service Management</p>
-<p>✓ Order Requests</p>
+<h2>Why Choose Us?</h2>
+<p>✓ Easy Customer Dashboard</p>
+<p>✓ Order History</p>
+<p>✓ Creative Services</p>
 <p>✓ Customer Support</p>
 </div>
+</div>
+</section>
 
+<section id="auth" class="container hidden">
 <div class="card">
-<h2>Contact Us</h2>
-<p>Need help? Contact Prince SMM Support.</p>
-</div>
-</div>
+<h2 id="authTitle">Create Account</h2>
+
+<div id="nameBox">
+<label>Full Name</label>
+<input id="fullName" placeholder="Enter your name">
 </div>
 
-<div class="container dashboard" id="dashboard">
-<h2>Welcome to Prince SMM</h2>
+<label>Email</label>
+<input id="email" type="email" placeholder="Enter email">
+
+<label>Password</label>
+<input id="password" type="password" placeholder="Enter password">
+
+<button class="btn" id="authBtn" onclick="authenticate()">Create Account</button>
+<p id="authMessage" class="status"></p>
+
+<p id="switchText">Already have an account?
+<a href="#" onclick="showAuth('login');return false">Login</a></p>
+
+<button class="btn2" onclick="goHome()">Back to Home</button>
+</div>
+</section>
+
+<section id="dashboard" class="container hidden">
+<div class="card">
+<h2>Customer Dashboard</h2>
+<p id="welcome"></p>
 <div class="grid">
-<div class="stat"><p>Wallet Balance</p><h2>₹0</h2></div>
-<div class="stat"><p>Total Orders</p><h2 id="count">0</h2></div>
+<div class="stat">
+<p>Wallet Transactions</p>
+<h2 id="walletCount">0</h2>
+</div>
+<div class="stat">
+<p>Total Orders</p>
+<h2 id="orderCount">0</h2>
+</div>
+</div>
 </div>
 
 <div class="card">
-<h2>New Service Request</h2>
+<h2>New Service Order</h2>
 <form id="orderForm">
-<label>Platform</label>
-<select id="platform">
-<option>Instagram</option>
-<option>YouTube</option>
-<option>Facebook</option>
-<option>Telegram</option>
+<label>Select Service</label>
+<select id="serviceSelect" required>
+<option value="">Loading services...</option>
 </select>
 
-<label>Service</label>
-<select id="service">
-<option>Thumbnail Design</option>
-<option>Video Editing</option>
-<option>Post Designing</option>
-<option>SEO Consultation</option>
-</select>
+<label>Target URL / Project Link</label>
+<input id="targetUrl" placeholder="Enter your website or social profile link" required>
 
-<label>Your Details</label>
-<textarea id="details" rows="4" placeholder="Describe your requirements"></textarea>
+<label>Requirements</label>
+<textarea id="orderDetails" rows="4" placeholder="Describe your design, editing or consultation requirements" required></textarea>
 
-<button class="btn" type="submit">Submit Request</button>
+<button class="btn" type="submit">Submit Order</button>
 </form>
-<p id="message"></p>
+<p id="orderMessage" class="status"></p>
 </div>
 
 <div class="card">
-<h3>Order History</h3>
-<div id="history">No orders yet.</div>
-</div>
-<button class="btn" onclick="showHome()">Back to Home</button>
+<h2>My Orders</h2>
+<div id="orderHistory">Loading...</div>
 </div>
 
-<footer>
-© 2026 Prince SMM | All Rights Reserved
-</footer>
+<div class="card">
+<h2>Wallet History</h2>
+<p class="small">This section shows verified transaction records only. No money can be added from this demo.</p>
+<div id="walletHistory">Loading...</div>
+</div>
+
+<div class="card">
+<h2>Customer Support</h2>
+<form id="supportForm">
+<label>Subject</label>
+<input id="supportSubject" required placeholder="Enter subject">
+<label>Message</label>
+<textarea id="supportMessage" required rows="3" placeholder="How can we help?"></textarea>
+<button class="btn" type="submit">Send Message</button>
+</form>
+<p id="supportStatus"></p>
+</div>
+
+<button class="btn" onclick="logout()">Logout</button>
+</section>
+
+<footer>© 2026 SMM PANNAL | All Rights Reserved</footer>
 
 <script>
-let orders=0;
+const SUPABASE_URL = "https://xaemcfpghkcpjmgakejf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_7dMJNKE5WWQlDIQG0l-pGw_R_2wubTq";
 
-function showDashboard(){
- document.getElementById("home").style.display="none";
- document.getElementById("dashboard").style.display="block";
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+let currentUser = null;
+let authMode = "signup";
+
+function show(id){
+ ["home","auth","dashboard"].forEach(x=>{
+  document.getElementById(x).classList.add("hidden");
+ });
+ document.getElementById(id).classList.remove("hidden");
  window.scrollTo(0,0);
 }
 
-function showHome(){
- document.getElementById("home").style.display="block";
- document.getElementById("dashboard").style.display="none";
- window.scrollTo(0,0);
+function goHome(){show("home");}
+
+function showAuth(mode){
+ authMode=mode;
+ show("auth");
+ document.getElementById("authTitle").innerText=mode==="signup"?"Create Account":"Customer Login";
+ document.getElementById("authBtn").innerText=mode==="signup"?"Create Account":"Login";
+ document.getElementById("nameBox").classList.toggle("hidden",mode==="login");
+ document.getElementById("switchText").innerHTML=mode==="signup"
+ ?'Already have an account? <a href="#" onclick="showAuth(\'login\');return false">Login</a>'
+ :'New customer? <a href="#" onclick="showAuth(\'signup\');return false">Create Account</a>';
+ document.getElementById("authMessage").innerText="";
 }
 
-document.getElementById("orderForm").addEventListener("submit",function(e){
+async function authenticate(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const name=document.getElementById("fullName").value.trim();
+ const msg=document.getElementById("authMessage");
+
+ if(!email||!password){msg.innerText="Enter email and password.";return;}
+ if(password.length<8){msg.innerText="Password must be at least 8 characters.";return;}
+ if(authMode==="signup"&&!name){msg.innerText="Enter your full name.";return;}
+
+ msg.innerText="Please wait...";
+
+ try{
+  if(authMode==="signup"){
+   const {data,error}=await db.auth.signUp({
+    email,password,
+    options:{
+     data:{full_name:name},
+     emailRedirectTo:location.origin+location.pathname
+    }
+   });
+   if(error)throw error;
+   msg.innerText=data.session
+    ?"Account created. You can now continue."
+    :"Signup successful! Check your email and confirm your account before login.";
+  }else{
+   const {error}=await db.auth.signInWithPassword({email,password});
+   if(error)throw error;
+   msg.innerText="Login successful!";
+  }
+ }catch(e){msg.innerText=e.message;}
+}
+
+async function loadServices(){
+ const select=document.getElementById("serviceSelect");
+ const {data,error}=await db.from("services")
+  .select("id,name,platform,description,price")
+  .eq("active",true).order("name");
+
+ if(error){select.innerHTML='<option value="">Services unavailable</option>';return;}
+ select.innerHTML='<option value="">Choose a service</option>';
+ (data||[]).forEach(s=>{
+  const opt=document.createElement("option");
+  opt.value=s.id;
+  opt.textContent=s.platform+" - "+s.name+" (₹"+s.price+")";
+  select.appendChild(opt);
+ });
+}
+
+async function loadOrders(){
+ const {data,error}=await db.from("orders")
+  .select("id,service_id,target_url,details,status,created_at")
+  .eq("user_id",currentUser.id)
+  .order("created_at",{ascending:false});
+
+ const box=document.getElementById("orderHistory");
+ if(error){box.innerText="Could not load orders.";return;}
+ document.getElementById("orderCount").innerText=(data||[]).length;
+ box.innerHTML="";
+ if(!data||!data.length){box.innerText="No orders yet.";return;}
+
+ data.forEach(o=>{
+  const div=document.createElement("div");
+  div.className="item";
+  const title=document.createElement("b");
+  title.textContent="Order #"+o.id.slice(0,8);
+  const status=document.createElement("p");
+  status.textContent="Status: "+o.status;
+  const details=document.createElement("p");
+  details.textContent=o.details;
+  div.append(title,status,details);
+  box.appendChild(div);
+ });
+}
+
+async function loadWallet(){
+ const {data,error}=await db.from("wallet_transactions")
+  .select("id,amount,transaction_type,created_at")
+  .eq("user_id",currentUser.id)
+  .order("created_at",{ascending:false});
+
+ const box=document.getElementById("walletHistory");
+ if(error){box.innerText="Could not load wallet history.";return;}
+ document.getElementById("walletCount").innerText=(data||[]).length;
+ box.innerHTML="";
+ if(!data||!data.length){box.innerText="No transactions yet.";return;}
+
+ data.forEach(t=>{
+  const div=document.createElement("div");
+  div.className="item";
+  div.textContent=t.transaction_type+" - ₹"+t.amount;
+  box.appendChild(div);
+ });
+}
+
+document.getElementById("orderForm").addEventListener("submit",async e=>{
  e.preventDefault();
- let p=document.getElementById("platform").value;
- let s=document.getElementById("service").value;
- let d=document.getElementById("details").value.trim();
+ const msg=document.getElementById("orderMessage");
+ msg.innerText="Submitting...";
 
- if(!d){alert("Please enter your details");return;}
+ const {error}=await db.from("orders").insert({
+  user_id:currentUser.id,
+  service_id:document.getElementById("serviceSelect").value,
+  target_url:document.getElementById("targetUrl").value.trim(),
+  details:document.getElementById("orderDetails").value.trim()
+ });
 
- orders++;
- document.getElementById("count").innerText=orders;
- document.getElementById("message").innerText="Request submitted in this demo!";
- document.getElementById("history").innerHTML=
- "<p>"+p+" - "+s+"</p>"+document.getElementById("history").innerHTML;
- this.reset();
+ if(error){msg.innerText="Error: "+error.message;return;}
+ msg.innerText="Order submitted successfully!";
+ e.target.reset();
+ await loadOrders();
 });
+
+document.getElementById("supportForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const msg=document.getElementById("supportStatus");
+ msg.innerText="Sending...";
+
+ const {error}=await db.from("support_tickets").insert({
+  user_id:currentUser.id,
+  subject:document.getElementById("supportSubject").value.trim(),
+  message:document.getElementById("supportMessage").value.trim()
+ });
+
+ if(error){msg.innerText="Error: "+error.message;return;}
+ msg.innerText="Support message submitted!";
+ e.target.reset();
+});
+
+async function openDashboard(user){
+ currentUser=user;
+ document.getElementById("welcome").innerText="Welcome, "+(user.user_metadata?.full_name||user.email);
+ document.getElementById("navUser").innerText=user.email;
+ show("dashboard");
+ await Promise.all([loadServices(),loadOrders(),loadWallet()]);
+}
+
+async function logout(){
+ await db.auth.signOut();
+ currentUser=null;
+ document.getElementById("navUser").innerText="Welcome";
+ show("home");
+}
+
+db.auth.onAuthStateChange((event,session)=>{
+ if(session?.user){
+  currentUser=session.user;
+  openDashboard(session.user);
+ }else if(event==="SIGNED_OUT"){
+  currentUser=null;
+  show("home");
+ }
+});
+
+(async()=>{
+ const {data}=await db.auth.getSession();
+ if(data.session?.user) await openDashboard(data.session.user);
+})();
 </script>
 </body>
 </html>
