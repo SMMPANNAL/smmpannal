@@ -1,680 +1,628 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SMM PANNAL</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;font-family:Arial,sans-serif;
- background:#f1f5fb;color:#18345c
-}
-header{
- background:#123c78;color:white;padding:18px;
- display:flex;justify-content:space-between;align-items:center;
- flex-wrap:wrap;gap:10px
-}
-header h2{margin:0}
-button{
- background:#1769d2;color:white;border:0;
- padding:11px 16px;border-radius:8px;
- cursor:pointer;font-weight:bold;margin:4px
-}
-button:hover{background:#0d4da5}
-input,select,textarea{
- width:100%;padding:12px;margin:7px 0 14px;
- border:1px solid #cbd5e1;border-radius:8px;
- font-size:15px
-}
-textarea{min-height:85px}
-.container{max-width:1000px;margin:20px auto;padding:12px}
-.card{
- background:white;padding:20px;border-radius:12px;
- margin-bottom:16px;box-shadow:0 3px 12px #0000000d
-}
-.hidden{display:none!important}
-.tabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:15px}
-.tabs button{background:#e0ebfb;color:#123c78}
-.tabs button.active{background:#1769d2;color:white}
-.item{
- padding:13px;border:1px solid #dce5f1;
- border-radius:9px;margin:9px 0;background:#fff
-}
-.small{font-size:13px;color:#64748b}
-h3{margin-top:0}
-.price{font-weight:bold;color:#087b50}
-.status{font-weight:bold;color:#1769d2}
-#message{padding:10px;border-radius:8px;margin:10px 0}
-footer{text-align:center;padding:20px;color:#64748b}
+body{margin:0;font-family:Arial;background:#f2f5fb;color:#17233b}
+header{background:#142b55;color:white;padding:18px;text-align:center}
+main{max-width:850px;margin:20px auto;padding:12px}
+.card{background:white;padding:18px;border-radius:12px;margin:14px 0;box-shadow:0 2px 10px #0001}
+input,select,textarea,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccd3df;border-radius:7px;font-size:15px}
+button{background:#155bd5;color:white;border:0;font-weight:bold;cursor:pointer}
+button.secondary{background:#52627a}
+button.danger{background:#bd3030}
+.hidden{display:none}
+h2{color:#17427e}
+.item{border-bottom:1px solid #ddd;padding:12px 0;overflow-wrap:anywhere}
+small{color:#64748b}
+#message{padding:10px;color:#17427e}
 </style>
 </head>
-
 <body>
-
 <header>
- <h2>💙 SMM PANNAL</h2>
- <button id="logoutBtn" class="hidden" onclick="logout()">Logout</button>
+<h1>SMM PANNAL</h1>
+<p>Social Media Services Panel</p>
 </header>
 
-<div class="container">
+<main>
+<div id="message"></div>
 
-<div id="message" class="hidden"></div>
-
-<!-- AUTH -->
 <section id="authSection" class="card">
- <h2>Welcome to SMM PANNAL</h2>
+<h2>Login</h2>
+<input id="loginEmail" type="email" placeholder="Email">
+<input id="loginPassword" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button class="secondary" onclick="showSignup()">Create Account</button>
+<button class="secondary" onclick="forgotPassword()">Forgot Password</button>
 
- <div id="loginBox">
-  <h3>Login</h3>
-  <input id="loginEmail" type="email" placeholder="Email">
-  <input id="loginPassword" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <button onclick="showBox('signupBox')">Create Account</button>
-  <button onclick="showBox('forgotBox')">Forgot Password?</button>
- </div>
-
- <div id="signupBox" class="hidden">
-  <h3>Create Account</h3>
-  <input id="signupName" placeholder="Full Name">
-  <input id="signupEmail" type="email" placeholder="Email">
-  <input id="signupPassword" type="password" placeholder="Password">
-  <button onclick="signup()">Sign Up</button>
-  <button onclick="showBox('loginBox')">Back to Login</button>
- </div>
-
- <div id="forgotBox" class="hidden">
-  <h3>Forgot Password</h3>
-  <p>Enter your registered email to receive a reset link.</p>
-  <input id="forgotEmail" type="email" placeholder="Registered Email">
-  <button onclick="forgotPassword()">Send Reset Link</button>
-  <button onclick="showBox('loginBox')">Back to Login</button>
- </div>
-
- <div id="resetBox" class="hidden">
-  <h3>Set New Password</h3>
-  <input id="newPassword" type="password" placeholder="New Password">
-  <button onclick="updatePassword()">Update Password</button>
- </div>
-</section>
-
-<!-- CUSTOMER DASHBOARD -->
-<section id="dashboard" class="hidden">
-
- <div class="card">
-  <h2>Welcome, <span id="customerName">Customer</span>!</h2>
-  <p>Wallet Balance: <strong id="walletBalance">₹0.00</strong></p>
- </div>
-
- <div class="tabs">
-  <button onclick="openTab('homeTab',this)" class="active">Dashboard</button>
-  <button onclick="openTab('servicesTab',this)">Services</button>
-  <button onclick="openTab('orderTab',this)">New Order</button>
-  <button onclick="openTab('historyTab',this)">My Orders</button>
-  <button onclick="openTab('walletTab',this)">Wallet</button>
-  <button onclick="openTab('supportTab',this)">Support</button>
- </div>
-
- <div id="homeTab" class="card tabContent">
-  <h3>Customer Dashboard</h3>
-  <p>Welcome to SMM PANNAL.</p>
-  <p>Choose a service and submit your order.</p>
- </div>
-
- <div id="servicesTab" class="card tabContent hidden">
-  <h3>Available Services</h3>
-  <div id="servicesList">Loading services...</div>
- </div>
-
- <div id="orderTab" class="card tabContent hidden">
-  <h3>Place New Order</h3>
-  <label>Select Service</label>
-  <select id="serviceSelect">
-   <option value="">Loading services...</option>
-  </select>
-
-  <label>Target URL</label>
-  <input id="targetUrl" placeholder="Enter your website or social media URL">
-
-  <label>Order Details</label>
-  <textarea id="orderDetails" placeholder="Describe the design, editing or consultation you need"></textarea>
-
-  <button onclick="placeOrder()">Submit Order</button>
-  <p class="small">Orders are reviewed by the admin.</p>
- </div>
-
- <div id="historyTab" class="card tabContent hidden">
-  <h3>My Orders</h3>
-  <button onclick="loadOrders()">Refresh Orders</button>
-  <div id="ordersList"></div>
- </div>
-
- <div id="walletTab" class="card tabContent hidden">
-  <h3>My Wallet</h3>
-  <h2 id="walletAmount">₹0.00</h2>
-  <p>Wallet transactions</p>
-  <button onclick="loadWallet()">Refresh Wallet</button>
-  <div id="walletList"></div>
-  <p class="small">
-   Wallet credits are added by the admin after checking the actual payment.
-   Contact support for payment instructions.
-  </p>
- </div>
-
- <div id="supportTab" class="card tabContent hidden">
-  <h3>Contact Support</h3>
-  <input id="ticketSubject" placeholder="Subject">
-  <textarea id="ticketMessage" placeholder="Write your message"></textarea>
-  <button onclick="createTicket()">Submit Ticket</button>
-  <h3>My Tickets</h3>
-  <button onclick="loadTickets()">Refresh Tickets</button>
-  <div id="ticketsList"></div>
- </div>
-
-</section>
-
-<!-- ADMIN -->
-<section id="adminSection" class="hidden">
-
- <div class="card">
-  <h2>🔐 Admin Panel</h2>
-  <p>Admin access verified.</p>
- </div>
-
- <div class="tabs">
-  <button onclick="adminTab('adminOrders')">All Orders</button>
-  <button onclick="adminTab('adminTickets')">Support Tickets</button>
-  <button onclick="adminTab('adminWallet')">Wallet Credit</button>
- </div>
-
- <div id="adminOrders" class="card">
-  <h3>All Orders</h3>
-  <button onclick="loadAdminOrders()">Refresh</button>
-  <div id="adminOrdersList"></div>
- </div>
-
- <div id="adminTickets" class="card hidden">
-  <h3>All Support Tickets</h3>
-  <button onclick="loadAdminTickets()">Refresh</button>
-  <div id="adminTicketsList"></div>
- </div>
-
- <div id="adminWallet" class="card hidden">
-  <h3>Add Wallet Transaction</h3>
-  <p class="small">Only credit after verifying payment independently.</p>
-  <input id="creditUserId" placeholder="Customer User ID (UUID)">
-  <input id="creditAmount" type="number" min="1" placeholder="Amount ₹">
-  <input id="creditReference" placeholder="Payment reference / UTR">
-  <button onclick="addWalletCredit()">Add Verified Credit</button>
- </div>
-
-</section>
+<div id="signupBox" class="hidden">
+<h2>Signup</h2>
+<input id="signupName" placeholder="Full Name">
+<input id="signupEmail" type="email" placeholder="Email">
+<input id="signupPassword" type="password" placeholder="Password">
+<button onclick="signup()">Create Account</button>
 </div>
 
-<footer>SMM PANNAL © 2026</footer>
+<div id="resetBox" class="hidden">
+<h2>New Password</h2>
+<input id="newPassword" type="password" placeholder="New Password">
+<button onclick="updatePassword()">Update Password</button>
+</div>
+</section>
+
+<section id="dashboard" class="hidden">
+<div class="card">
+<h2>Customer Dashboard</h2>
+<p id="welcome"></p>
+<button class="secondary" onclick="logout()">Logout</button>
+</div>
+
+<div class="card">
+<h2>Available Services</h2>
+<div id="servicesList">Loading...</div>
+</div>
+
+<div class="card">
+<h2>Place New Order</h2>
+<select id="serviceSelect">
+<option value="">Select Service</option>
+</select>
+<input id="targetUrl" placeholder="Instagram / YouTube Link">
+<textarea id="orderDetails" placeholder="Order details"></textarea>
+<button onclick="placeOrder()">Submit Order</button>
+</div>
+
+<div class="card">
+<h2>My Orders</h2>
+<div id="myOrders">Loading...</div>
+</div>
+
+<div class="card">
+<h2>My Wallet</h2>
+<h3 id="walletBalance">Balance: ₹0</h3>
+<div id="walletHistory"></div>
+</div>
+
+<div class="card">
+<h2>Support</h2>
+<input id="ticketSubject" placeholder="Subject">
+<textarea id="ticketMessage" placeholder="Write your message"></textarea>
+<button onclick="createTicket()">Submit Ticket</button>
+<div id="myTickets"></div>
+</div>
+</section>
+
+<section id="adminSection" class="hidden">
+<div class="card">
+<h2>ADMIN PANEL</h2>
+<p>Admin Dashboard</p>
+<button class="secondary" onclick="loadAdmin()">Refresh Admin Data</button>
+</div>
+
+<div class="card">
+<h2>All Orders</h2>
+<div id="adminOrders">Loading...</div>
+</div>
+
+<div class="card">
+<h2>All Support Tickets</h2>
+<div id="adminTickets">Loading...</div>
+</div>
+
+<div class="card">
+<h2>Add Wallet Credit</h2>
+<input id="creditUserId" placeholder="Customer User ID">
+<input id="creditAmount" type="number" min="1" placeholder="Amount">
+<input id="creditReference" placeholder="Payment reference / note">
+<button onclick="addCredit()">Add Credit</button>
+</div>
+</section>
+</section>
+</main>
 
 <script>
 const SUPABASE_URL = "https://xaemcfpghkcpjmgakejf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_7dMJNKE5WWQlDIQG0l-pGw_R_2wubTq";
 
-const db = window.supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 let currentUser = null;
 let currentRole = "customer";
-let servicesCache = [];
 
 function msg(text){
- const box=document.getElementById("message");
- box.textContent=text;
- box.classList.remove("hidden");
- window.scrollTo({top:0,behavior:"smooth"});
+ document.getElementById("message").textContent = text;
 }
 
-function clearMsg(){
- document.getElementById("message").classList.add("hidden");
-}
-
-function showBox(id){
- ["loginBox","signupBox","forgotBox","resetBox"].forEach(x=>{
-  document.getElementById(x).classList.add("hidden");
- });
+function show(id){
  document.getElementById(id).classList.remove("hidden");
 }
 
-function openTab(id,btn){
- document.querySelectorAll(".tabContent").forEach(x=>x.classList.add("hidden"));
- document.getElementById(id).classList.remove("hidden");
- document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));
- if(btn)btn.classList.add("active");
-
- if(id==="servicesTab")loadServices();
- if(id==="historyTab")loadOrders();
- if(id==="walletTab")loadWallet();
- if(id==="supportTab")loadTickets();
+function hide(id){
+ document.getElementById(id).classList.add("hidden");
 }
 
-function adminTab(id){
- ["adminOrders","adminTickets","adminWallet"].forEach(x=>{
-  document.getElementById(x).classList.add("hidden");
- });
- document.getElementById(id).classList.remove("hidden");
- if(id==="adminOrders")loadAdminOrders();
- if(id==="adminTickets")loadAdminTickets();
+function showSignup(){
+ show("signupBox");
 }
 
 async function signup(){
- clearMsg();
- const name=document.getElementById("signupName").value.trim();
- const email=document.getElementById("signupEmail").value.trim();
- const password=document.getElementById("signupPassword").value;
+ const name = document.getElementById("signupName").value.trim();
+ const email = document.getElementById("signupEmail").value.trim();
+ const password = document.getElementById("signupPassword").value;
 
- if(!name||!email||password.length<6){
-  msg("Enter name, valid email and password of at least 6 characters.");
+ if(!name || !email || !password){
+  msg("Please fill all fields");
   return;
  }
 
- const {data,error}=await db.auth.signUp({
-  email,password,
-  options:{data:{full_name:name}}
+ const {data,error} = await db.auth.signUp({
+  email,password
  });
 
- if(error){msg(error.message);return;}
-
- if(data.user && data.session){
-  await db.from("profiles").upsert({
-   id:data.user.id,
-   full_name:name
-  },{onConflict:"id"});
+ if(error){
+  msg(error.message);
+  return;
  }
 
- msg("Account created. If email confirmation is enabled, verify your email before login.");
- showBox("loginBox");
+ if(data.user && data.session){
+  const {error:profileError} = await db.from("profiles").insert({
+   id:data.user.id,
+   full_name:name,
+   role:"customer"
+  });
+
+  if(profileError){
+   msg("Account created. Profile will be created after login.");
+  }
+ }
+
+ msg("Signup successful. Email confirmation may be required. Please login.");
 }
 
 async function login(){
- clearMsg();
- const email=document.getElementById("loginEmail").value.trim();
- const password=document.getElementById("loginPassword").value;
+ const email = document.getElementById("loginEmail").value.trim();
+ const password = document.getElementById("loginPassword").value;
 
- const {data,error}=await db.auth.signInWithPassword({email,password});
- if(error){msg(error.message);return;}
+ const {data,error} = await db.auth.signInWithPassword({
+  email,password
+ });
+
+ if(error){
+  msg(error.message);
+  return;
+ }
+
  await startApp(data.user);
 }
 
 async function forgotPassword(){
- clearMsg();
- const email=document.getElementById("forgotEmail").value.trim();
- if(!email){msg("Enter your registered email.");return;}
+ const email = document.getElementById("loginEmail").value.trim();
 
- const {error}=await db.auth.resetPasswordForEmail(email,{
+ if(!email){
+  msg("Enter your email first");
+  return;
+ }
+
+ const {error} = await db.auth.resetPasswordForEmail(email,{
   redirectTo:"https://smmpannal.github.io/smmpannal/"
  });
 
- if(error){msg(error.message);return;}
- msg("If this email is registered, a password reset link will be sent. Check your inbox.");
+ if(error) msg(error.message);
+ else msg("Password reset email sent.");
 }
 
 async function updatePassword(){
- const password=document.getElementById("newPassword").value;
- if(password.length<6){msg("Password must be at least 6 characters.");return;}
+ const password = document.getElementById("newPassword").value;
 
- const {error}=await db.auth.updateUser({password});
- if(error){msg(error.message);return;}
+ if(password.length < 6){
+  msg("Password must be at least 6 characters");
+  return;
+ }
 
- msg("Password updated. Please login with your new password.");
+ const {error} = await db.auth.updateUser({password});
+
+ if(error){
+  msg(error.message);
+  return;
+ }
+
+ msg("Password updated. Please login again.");
  await logout();
- showBox("loginBox");
-}
-
-async function logout(){
- await db.auth.signOut();
- currentUser=null;
- currentRole="customer";
- document.getElementById("dashboard").classList.add("hidden");
- document.getElementById("adminSection").classList.add("hidden");
- document.getElementById("authSection").classList.remove("hidden");
- document.getElementById("logoutBtn").classList.add("hidden");
- showBox("loginBox");
 }
 
 async function startApp(user){
- currentUser=user;
- clearMsg();
+ currentUser = user;
 
- const {data:profile,error}=await db
+ hide("authSection");
+ show("dashboard");
+ hide("adminSection");
+
+ const {data:profile,error} = await db
   .from("profiles")
   .select("id,full_name,role")
   .eq("id",user.id)
   .maybeSingle();
 
- if(error){msg("Profile error: "+error.message);return;}
-
- if(!profile){
-  const {error:insertError}=await db.from("profiles").insert({
-   id:user.id,
-   full_name:user.user_metadata?.full_name || "Customer"
-  });
-  if(insertError){msg("Profile setup error: "+insertError.message);return;}
-  currentRole="customer";
- }else{
-  currentRole=profile.role || "customer";
-  alert("Your Role: " + currentRole);
+ if(error){
+  msg("Profile error: " + error.message);
+  return;
  }
 
- document.getElementById("customerName").textContent=
-  profile?.full_name || user.user_metadata?.full_name || "Customer";
+ if(!profile){
+  const {error:insertError} = await db.from("profiles").insert({
+   id:user.id,
+   full_name:user.email,
+   role:"customer"
+  });
 
- document.getElementById("authSection").classList.add("hidden");
- document.getElementById("dashboard").classList.remove("hidden");
- document.getElementById("logoutBtn").classList.remove("hidden");
+  if(insertError){
+   msg("Profile create error: " + insertError.message);
+   return;
+  }
 
- if(currentRole==="admin"){
-  document.getElementById("adminSection").classList.remove("hidden");
-  loadAdminOrders();
+  currentRole = "customer";
+  document.getElementById("welcome").textContent =
+   "Welcome " + user.email;
+ }else{
+  currentRole = profile.role || "customer";
+  document.getElementById("welcome").textContent =
+   "Welcome " + (profile.full_name || user.email);
+ }
+
+ msg("Your Role: " + currentRole);
+
+ if(currentRole === "admin"){
+  show("adminSection");
+  await loadAdmin();
  }
 
  await loadServices();
+ await loadOrders();
  await loadWallet();
+ await loadTickets();
 }
 
 async function loadServices(){
- const select=document.getElementById("serviceSelect");
- const list=document.getElementById("servicesList");
-
- const {data,error}=await db.from("services")
-  .select("id,name,platform,description,price")
-  .eq("active",true).order("name");
+ const {data,error} = await db
+  .from("services")
+  .select("*")
+  .eq("active",true)
+  .order("created_at");
 
  if(error){
-  select.innerHTML='<option>Error loading services</option>';
-  list.textContent="Services error: "+error.message;
+  document.getElementById("servicesList").textContent=error.message;
   return;
  }
 
- servicesCache=data||[];
- select.innerHTML='<option value="">Choose a service</option>';
+ const list = document.getElementById("servicesList");
+ const select = document.getElementById("serviceSelect");
+
  list.innerHTML="";
+ select.innerHTML='<option value="">Select Service</option>';
 
- if(!servicesCache.length){
-  list.textContent="No active services found.";
-  return;
- }
+ (data || []).forEach(s=>{
+  const option=document.createElement("option");
+  option.value=s.id;
+  option.textContent=s.name+" - ₹"+s.price;
+  select.appendChild(option);
 
- servicesCache.forEach(s=>{
-  const opt=document.createElement("option");
-  opt.value=s.id;
-  opt.textContent=s.platform+" - "+s.name+" (₹"+s.price+")";
-  select.appendChild(opt);
-
-  const item=document.createElement("div");
-  item.className="item";
-  const title=document.createElement("strong");
-  title.textContent=s.name+" - "+s.platform;
-  const desc=document.createElement("p");
-  desc.textContent=s.description||"";
-  const price=document.createElement("p");
-  price.className="price";
-  price.textContent="₹"+s.price;
-  item.append(title,desc,price);
-  list.appendChild(item);
+  const div=document.createElement("div");
+  div.className="item";
+  div.textContent=s.name+" | "+s.platform+" | ₹"+s.price;
+  list.appendChild(div);
  });
+
+ if(!data || !data.length) list.textContent="No active services available.";
 }
 
 async function placeOrder(){
- clearMsg();
- const serviceId=document.getElementById("serviceSelect").value;
- const target=document.getElementById("targetUrl").value.trim();
+ const service_id=document.getElementById("serviceSelect").value;
+ const target_url=document.getElementById("targetUrl").value.trim();
  const details=document.getElementById("orderDetails").value.trim();
 
- if(!serviceId||!target||!details){
-  msg("Please complete all order fields.");
+ if(!service_id || !target_url){
+  msg("Select service and enter link");
   return;
  }
 
  const {error}=await db.from("orders").insert({
   user_id:currentUser.id,
-  service_id:serviceId,
-  target_url:target,
-  details:details,
+  service_id,
+  target_url,
+  details,
   status:"pending"
  });
 
- if(error){msg("Order error: "+error.message);return;}
+ if(error){
+  msg("Order error: "+error.message);
+  return;
+ }
 
- msg("Order submitted successfully.");
+ msg("Order submitted successfully");
  document.getElementById("targetUrl").value="";
  document.getElementById("orderDetails").value="";
- loadOrders();
+ await loadOrders();
 }
 
 async function loadOrders(){
- const box=document.getElementById("ordersList");
- box.textContent="Loading...";
-
  const {data,error}=await db.from("orders")
-  .select("id,service_id,target_url,details,status,created_at")
+  .select("id,target_url,details,status,created_at")
   .eq("user_id",currentUser.id)
   .order("created_at",{ascending:false});
 
- if(error){box.textContent=error.message;return;}
+ const box=document.getElementById("myOrders");
  box.innerHTML="";
 
- if(!data?.length){box.textContent="No orders yet.";return;}
+ if(error){
+  box.textContent=error.message;
+  return;
+ }
 
- data.forEach(o=>{
-  const item=document.createElement("div");
-  item.className="item";
-  item.textContent="Order: "+o.id+
-   " | Service: "+o.service_id+
-   " | Status: "+o.status+
-   " | URL: "+o.target_url+
-   " | Date: "+new Date(o.created_at).toLocaleString();
-  box.appendChild(item);
+ (data || []).forEach(o=>{
+  const div=document.createElement("div");
+  div.className="item";
+  div.textContent="Order: "+o.id+" | "+o.status+" | "+o.target_url;
+  box.appendChild(div);
  });
+
+ if(!data || !data.length) box.textContent="No orders yet.";
 }
 
 async function loadWallet(){
  const {data,error}=await db.from("wallet_transactions")
-  .select("amount,transaction_type,payment_reference,created_at")
+  .select("*")
   .eq("user_id",currentUser.id)
   .order("created_at",{ascending:false});
 
- if(error){msg("Wallet error: "+error.message);return;}
-
- let balance=0;
- const box=document.getElementById("walletList");
+ const box=document.getElementById("walletHistory");
  box.innerHTML="";
 
- (data||[]).forEach(t=>{
+ if(error){
+  box.textContent=error.message;
+  return;
+ }
+
+ let balance=0;
+
+ (data || []).forEach(t=>{
   const amount=Number(t.amount)||0;
   const type=(t.transaction_type||"").toLowerCase();
-  if(["credit","add","deposit"].includes(type))balance+=amount;
-  else balance-=amount;
 
-  const item=document.createElement("div");
-  item.className="item";
-  item.textContent=t.transaction_type+" ₹"+amount+
-   " | "+(t.payment_reference||"No reference")+
-   " | "+new Date(t.created_at).toLocaleString();
-  box.appendChild(item);
+  if(["credit","add","deposit"].includes(type)){
+   balance+=amount;
+  }else{
+   balance-=amount;
+  }
+
+  const div=document.createElement("div");
+  div.className="item";
+  div.textContent=t.transaction_type+" : ₹"+amount;
+  box.appendChild(div);
  });
 
- document.getElementById("walletBalance").textContent="₹"+balance.toFixed(2);
- document.getElementById("walletAmount").textContent="₹"+balance.toFixed(2);
-
- if(!data?.length)box.textContent="No wallet transactions yet.";
+ document.getElementById("walletBalance").textContent="Balance: ₹"+balance;
+ if(!data || !data.length) box.textContent="No wallet transactions.";
 }
 
 async function createTicket(){
  const subject=document.getElementById("ticketSubject").value.trim();
  const message=document.getElementById("ticketMessage").value.trim();
 
- if(!subject||!message){msg("Enter ticket subject and message.");return;}
+ if(!subject || !message){
+  msg("Enter subject and message");
+  return;
+ }
 
  const {error}=await db.from("support_tickets").insert({
-  user_id:currentUser.id,subject,message,status:"open"
+  user_id:currentUser.id,
+  subject,
+  message,
+  status:"open"
  });
 
- if(error){msg(error.message);return;}
- msg("Support ticket submitted.");
+ if(error){
+  msg(error.message);
+  return;
+ }
+
+ msg("Support ticket submitted");
  document.getElementById("ticketSubject").value="";
  document.getElementById("ticketMessage").value="";
- loadTickets();
+ await loadTickets();
 }
 
 async function loadTickets(){
- const box=document.getElementById("ticketsList");
- box.textContent="Loading...";
-
  const {data,error}=await db.from("support_tickets")
-  .select("id,subject,message,status,created_at")
+  .select("*")
   .eq("user_id",currentUser.id)
   .order("created_at",{ascending:false});
 
- if(error){box.textContent=error.message;return;}
+ const box=document.getElementById("myTickets");
  box.innerHTML="";
 
- if(!data?.length){box.textContent="No support tickets.";return;}
+ if(error){
+  box.textContent=error.message;
+  return;
+ }
 
- data.forEach(t=>{
-  const item=document.createElement("div");
-  item.className="item";
-  item.textContent=t.subject+" | "+t.status+" | "+t.message;
-  box.appendChild(item);
+ (data || []).forEach(t=>{
+  const div=document.createElement("div");
+  div.className="item";
+  div.textContent=t.subject+" | "+t.status;
+  box.appendChild(div);
  });
+
+ if(!data || !data.length) box.textContent="No tickets yet.";
+}
+
+async function loadAdmin(){
+ if(currentRole !== "admin") return;
+
+ await loadAdminOrders();
+ await loadAdminTickets();
 }
 
 async function loadAdminOrders(){
- const box=document.getElementById("adminOrdersList");
- box.textContent="Loading orders...";
+ const box=document.getElementById("adminOrders");
+ box.innerHTML="Loading...";
 
  const {data,error}=await db.from("orders")
-  .select("*").order("created_at",{ascending:false});
+  .select("*")
+  .order("created_at",{ascending:false});
 
- if(error){box.textContent=error.message;return;}
  box.innerHTML="";
 
- if(!data?.length){box.textContent="No orders found.";return;}
+ if(error){
+  box.textContent=error.message;
+  return;
+ }
 
- data.forEach(o=>{
-  const item=document.createElement("div");
-  item.className="item";
+ (data || []).forEach(o=>{
+  const div=document.createElement("div");
+  div.className="item";
 
   const info=document.createElement("p");
-  info.textContent="Order ID: "+o.id+
-   " | Customer ID: "+o.user_id+
-   " | Service ID: "+o.service_id+
-   " | URL: "+o.target_url+
-   " | Details: "+o.details+
-   " | Status: "+o.status;
+  info.textContent="Order ID: "+o.id+" | User: "+o.user_id+
+   " | Link: "+o.target_url+" | Status: "+o.status;
 
   const select=document.createElement("select");
   ["pending","processing","completed","cancelled"].forEach(status=>{
-   const opt=document.createElement("option");
-   opt.value=status;opt.textContent=status;
-   if(status===o.status)opt.selected=true;
-   select.appendChild(opt);
+   const op=document.createElement("option");
+   op.value=status;
+   op.textContent=status;
+   if(status===o.status) op.selected=true;
+   select.appendChild(op);
   });
 
-  const save=document.createElement("button");
-  save.textContent="Update Status";
-  save.onclick=()=>updateOrderStatus(o.id,select.value);
+  const button=document.createElement("button");
+  button.textContent="Update Status";
+  button.onclick=()=>updateOrder(o.id,select.value);
 
-  item.append(info,select,save);
-  box.appendChild(item);
+  div.append(info,select,button);
+  box.appendChild(div);
  });
+
+ if(!data || !data.length) box.textContent="No orders.";
 }
 
-async function updateOrderStatus(id,status){
+async function updateOrder(id,status){
  const {error}=await db.from("orders")
-  .update({status}).eq("id",id);
+  .update({status})
+  .eq("id",id);
 
- if(error){msg(error.message);return;}
- msg("Order status updated.");
- loadAdminOrders();
+ if(error) msg(error.message);
+ else{
+  msg("Order status updated");
+  await loadAdminOrders();
+ }
 }
 
 async function loadAdminTickets(){
- const box=document.getElementById("adminTicketsList");
- box.textContent="Loading tickets...";
+ const box=document.getElementById("adminTickets");
+ box.innerHTML="Loading...";
 
  const {data,error}=await db.from("support_tickets")
-  .select("*").order("created_at",{ascending:false});
+  .select("*")
+  .order("created_at",{ascending:false});
 
- if(error){box.textContent=error.message;return;}
  box.innerHTML="";
 
- if(!data?.length){box.textContent="No tickets found.";return;}
+ if(error){
+  box.textContent=error.message;
+  return;
+ }
 
- data.forEach(t=>{
-  const item=document.createElement("div");
-  item.className="item";
+ (data || []).forEach(t=>{
+  const div=document.createElement("div");
+  div.className="item";
 
   const info=document.createElement("p");
-  info.textContent="Ticket: "+t.id+" | User: "+t.user_id+
-   " | "+t.subject+" | "+t.message+" | "+t.status;
+  info.textContent=t.subject+" | "+t.message+" | User: "+t.user_id;
 
   const select=document.createElement("select");
-  ["open","in progress","closed"].forEach(s=>{
-   const opt=document.createElement("option");
-   opt.value=s;opt.textContent=s;
-   if(s===t.status)opt.selected=true;
-   select.appendChild(opt);
+  ["open","in_progress","closed"].forEach(status=>{
+   const op=document.createElement("option");
+   op.value=status;
+   op.textContent=status;
+   if(status===t.status) op.selected=true;
+   select.appendChild(op);
   });
 
-  const save=document.createElement("button");
-  save.textContent="Update Ticket";
-  save.onclick=async()=>{
-   const {error}=await db.from("support_tickets")
-    .update({status:select.value}).eq("id",t.id);
-   if(error){msg(error.message);return;}
-   msg("Ticket updated.");
-   loadAdminTickets();
-  };
+  const button=document.createElement("button");
+  button.textContent="Update Ticket";
+  button.onclick=()=>updateTicket(t.id,select.value);
 
-  item.append(info,select,save);
-  box.appendChild(item);
+  div.append(info,select,button);
+  box.appendChild(div);
  });
+
+ if(!data || !data.length) box.textContent="No tickets.";
 }
 
-async function addWalletCredit(){
- const userId=document.getElementById("creditUserId").value.trim();
+async function updateTicket(id,status){
+ const {error}=await db.from("support_tickets")
+  .update({status})
+  .eq("id",id);
+
+ if(error) msg(error.message);
+ else{
+  msg("Ticket updated");
+  await loadAdminTickets();
+ }
+}
+
+async function addCredit(){
+ if(currentRole !== "admin"){
+  msg("Admin access required");
+  return;
+ }
+
+ const user_id=document.getElementById("creditUserId").value.trim();
  const amount=Number(document.getElementById("creditAmount").value);
  const reference=document.getElementById("creditReference").value.trim();
 
- if(!userId||!Number.isFinite(amount)||amount<=0||!reference){
-  msg("Enter valid customer ID, amount and payment reference.");
+ if(!user_id || !Number.isFinite(amount) || amount<=0){
+  msg("Enter valid User ID and amount");
   return;
  }
 
  const {error}=await db.from("wallet_transactions").insert({
-  user_id:userId,
-  amount:amount,
+  user_id,
+  amount,
   transaction_type:"credit",
   payment_reference:reference
  });
 
- if(error){msg("Wallet credit error: "+error.message);return;}
+ if(error){
+  msg(error.message);
+  return;
+ }
 
- msg("Wallet credit transaction added.");
+ msg("Credit transaction added");
  document.getElementById("creditUserId").value="";
  document.getElementById("creditAmount").value="";
  document.getElementById("creditReference").value="";
 }
 
-db.auth.onAuthStateChange((event,session)=>{
- if(event==="PASSWORD_RECOVERY"){
-  document.getElementById("authSection").classList.remove("hidden");
-document.getElementById("dashboard").classList.add("hidden");
-document.getElementById("adminSection").classList.add("hidden");
-showBox("resetBox");
+async function logout(){
+ await db.auth.signOut();
+ currentUser=null;
+ currentRole="customer";
+ hide("dashboard");
+ hide("adminSection");
+ show("authSection");
+ msg("Logged out");
 }
+
+db.auth.onAuthStateChange(async(event,session)=>{
+ if(event==="PASSWORD_RECOVERY"){
+  show("resetBox");
+ }
 });
 
 (async function(){
