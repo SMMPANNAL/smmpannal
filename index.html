@@ -1,370 +1,686 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SMM PANNAL</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f7ff;color:#19345b}
-header{background:#1265db;color:white;padding:18px 20px}
-nav{display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:24px;font-weight:bold}
-button{cursor:pointer;font-size:15px}
-.btn{background:#1265db;color:white;border:0;padding:12px 18px;border-radius:9px}
-.btn2{background:white;color:#1265db;border:1px solid #1265db;padding:11px 16px;border-radius:9px}
-.container{max-width:850px;margin:auto;padding:16px}
-.hero{padding:35px 20px;text-align:center;background:#e5efff}
-.hero h1{color:#125bc4;font-size:32px}
-.card{background:white;padding:18px;border-radius:14px;margin:14px 0;box-shadow:0 3px 14px #dce7f7}
-input,select,textarea{width:100%;padding:13px;margin:8px 0 14px;border:1px solid #ccd9ed;border-radius:8px;font-size:15px}
-label{font-weight:bold;font-size:14px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.stat{background:#e7f1ff;padding:16px;border-radius:12px}
-.stat h2{color:#1265db;margin:8px 0}
+body{
+ margin:0;font-family:Arial,sans-serif;
+ background:#f1f5fb;color:#18345c
+}
+header{
+ background:#123c78;color:white;padding:18px;
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px
+}
+header h2{margin:0}
+button{
+ background:#1769d2;color:white;border:0;
+ padding:11px 16px;border-radius:8px;
+ cursor:pointer;font-weight:bold;margin:4px
+}
+button:hover{background:#0d4da5}
+input,select,textarea{
+ width:100%;padding:12px;margin:7px 0 14px;
+ border:1px solid #cbd5e1;border-radius:8px;
+ font-size:15px
+}
+textarea{min-height:85px}
+.container{max-width:1000px;margin:20px auto;padding:12px}
+.card{
+ background:white;padding:20px;border-radius:12px;
+ margin-bottom:16px;box-shadow:0 3px 12px #0000000d
+}
 .hidden{display:none!important}
-.small{font-size:13px;color:#687b97}
-.status{padding:10px;border-radius:8px;background:#eaf2ff;margin:10px 0}
-footer{text-align:center;padding:25px;color:#687b97}
-h2{color:#1459b6}
-.item{border-bottom:1px solid #e5eaf2;padding:12px 0}
+.tabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:15px}
+.tabs button{background:#e0ebfb;color:#123c78}
+.tabs button.active{background:#1769d2;color:white}
+.item{
+ padding:13px;border:1px solid #dce5f1;
+ border-radius:9px;margin:9px 0;background:#fff
+}
+.small{font-size:13px;color:#64748b}
+h3{margin-top:0}
+.price{font-weight:bold;color:#087b50}
+.status{font-weight:bold;color:#1769d2}
+#message{padding:10px;border-radius:8px;margin:10px 0}
+footer{text-align:center;padding:20px;color:#64748b}
 </style>
 </head>
 
 <body>
 
 <header>
-<nav>
-<div class="logo">SMM PANNAL</div>
-<div id="navUser" class="small" style="color:white">Welcome</div>
-</nav>
+ <h2>💙 SMM PANNAL</h2>
+ <button id="logoutBtn" class="hidden" onclick="logout()">Logout</button>
 </header>
 
-<section id="home">
-<div class="hero">
-<h1>Grow Your Social Media 🚀</h1>
-<p>Welcome to SMM PANNAL</p>
-<p>Creative Social Media Services</p>
-<button class="btn" onclick="showAuth('signup')">Get Started</button>
-<button class="btn2" onclick="showAuth('login')">Login</button>
-</div>
-
 <div class="container">
-<h2>Our Services</h2>
-<div class="grid">
-<div class="card">📸 <b>Instagram</b><p>Post Design</p></div>
-<div class="card">▶️ <b>YouTube</b><p>Thumbnail Design</p></div>
-<div class="card">📘 <b>Facebook</b><p>Creative Posts</p></div>
-<div class="card">✈️ <b>Telegram</b><p>Channel Graphics</p></div>
-</div>
-<div class="card">
-<h2>Why Choose Us?</h2>
-<p>✓ Easy Customer Dashboard</p>
-<p>✓ Order History</p>
-<p>✓ Creative Services</p>
-<p>✓ Customer Support</p>
-</div>
-</div>
+
+<div id="message" class="hidden"></div>
+
+<!-- AUTH -->
+<section id="authSection" class="card">
+ <h2>Welcome to SMM PANNAL</h2>
+
+ <div id="loginBox">
+  <h3>Login</h3>
+  <input id="loginEmail" type="email" placeholder="Email">
+  <input id="loginPassword" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <button onclick="showBox('signupBox')">Create Account</button>
+  <button onclick="showBox('forgotBox')">Forgot Password?</button>
+ </div>
+
+ <div id="signupBox" class="hidden">
+  <h3>Create Account</h3>
+  <input id="signupName" placeholder="Full Name">
+  <input id="signupEmail" type="email" placeholder="Email">
+  <input id="signupPassword" type="password" placeholder="Password">
+  <button onclick="signup()">Sign Up</button>
+  <button onclick="showBox('loginBox')">Back to Login</button>
+ </div>
+
+ <div id="forgotBox" class="hidden">
+  <h3>Forgot Password</h3>
+  <p>Enter your registered email to receive a reset link.</p>
+  <input id="forgotEmail" type="email" placeholder="Registered Email">
+  <button onclick="forgotPassword()">Send Reset Link</button>
+  <button onclick="showBox('loginBox')">Back to Login</button>
+ </div>
+
+ <div id="resetBox" class="hidden">
+  <h3>Set New Password</h3>
+  <input id="newPassword" type="password" placeholder="New Password">
+  <button onclick="updatePassword()">Update Password</button>
+ </div>
 </section>
 
-<section id="auth" class="container hidden">
-<div class="card">
-<h2 id="authTitle">Create Account</h2>
+<!-- CUSTOMER DASHBOARD -->
+<section id="dashboard" class="hidden">
 
-<div id="nameBox">
-<label>Full Name</label>
-<input id="fullName" placeholder="Enter your name">
-</div>
+ <div class="card">
+  <h2>Welcome, <span id="customerName">Customer</span>!</h2>
+  <p>Wallet Balance: <strong id="walletBalance">₹0.00</strong></p>
+ </div>
 
-<label>Email</label>
-<input id="email" type="email" placeholder="Enter email">
+ <div class="tabs">
+  <button onclick="openTab('homeTab',this)" class="active">Dashboard</button>
+  <button onclick="openTab('servicesTab',this)">Services</button>
+  <button onclick="openTab('orderTab',this)">New Order</button>
+  <button onclick="openTab('historyTab',this)">My Orders</button>
+  <button onclick="openTab('walletTab',this)">Wallet</button>
+  <button onclick="openTab('supportTab',this)">Support</button>
+ </div>
 
-<label>Password</label>
-<input id="password" type="password" placeholder="Enter password">
+ <div id="homeTab" class="card tabContent">
+  <h3>Customer Dashboard</h3>
+  <p>Welcome to SMM PANNAL.</p>
+  <p>Choose a service and submit your order.</p>
+ </div>
 
-<button class="btn" id="authBtn" onclick="authenticate()">Create Account</button>
-<p id="authMessage" class="status"></p>
+ <div id="servicesTab" class="card tabContent hidden">
+  <h3>Available Services</h3>
+  <div id="servicesList">Loading services...</div>
+ </div>
 
-<p id="switchText">Already have an account?
-<a href="#" onclick="showAuth('login');return false">Login</a></p>
+ <div id="orderTab" class="card tabContent hidden">
+  <h3>Place New Order</h3>
+  <label>Select Service</label>
+  <select id="serviceSelect">
+   <option value="">Loading services...</option>
+  </select>
 
-<button class="btn2" onclick="goHome()">Back to Home</button>
-</div>
+  <label>Target URL</label>
+  <input id="targetUrl" placeholder="Enter your website or social media URL">
+
+  <label>Order Details</label>
+  <textarea id="orderDetails" placeholder="Describe the design, editing or consultation you need"></textarea>
+
+  <button onclick="placeOrder()">Submit Order</button>
+  <p class="small">Orders are reviewed by the admin.</p>
+ </div>
+
+ <div id="historyTab" class="card tabContent hidden">
+  <h3>My Orders</h3>
+  <button onclick="loadOrders()">Refresh Orders</button>
+  <div id="ordersList"></div>
+ </div>
+
+ <div id="walletTab" class="card tabContent hidden">
+  <h3>My Wallet</h3>
+  <h2 id="walletAmount">₹0.00</h2>
+  <p>Wallet transactions</p>
+  <button onclick="loadWallet()">Refresh Wallet</button>
+  <div id="walletList"></div>
+  <p class="small">
+   Wallet credits are added by the admin after checking the actual payment.
+   Contact support for payment instructions.
+  </p>
+ </div>
+
+ <div id="supportTab" class="card tabContent hidden">
+  <h3>Contact Support</h3>
+  <input id="ticketSubject" placeholder="Subject">
+  <textarea id="ticketMessage" placeholder="Write your message"></textarea>
+  <button onclick="createTicket()">Submit Ticket</button>
+  <h3>My Tickets</h3>
+  <button onclick="loadTickets()">Refresh Tickets</button>
+  <div id="ticketsList"></div>
+ </div>
+
 </section>
 
-<section id="dashboard" class="container hidden">
-<div class="card">
-<h2>Customer Dashboard</h2>
-<p id="welcome"></p>
-<div class="grid">
-<div class="stat">
-<p>Wallet Transactions</p>
-<h2 id="walletCount">0</h2>
-</div>
-<div class="stat">
-<p>Total Orders</p>
-<h2 id="orderCount">0</h2>
-</div>
-</div>
-</div>
+<!-- ADMIN -->
+<section id="adminSection" class="hidden">
 
-<div class="card">
-<h2>New Service Order</h2>
-<form id="orderForm">
-<label>Select Service</label>
-<select id="serviceSelect" required>
-<option value="">Loading services...</option>
-</select>
+ <div class="card">
+  <h2>🔐 Admin Panel</h2>
+  <p>Admin access verified.</p>
+ </div>
 
-<label>Target URL / Project Link</label>
-<input id="targetUrl" placeholder="Enter your website or social profile link" required>
+ <div class="tabs">
+  <button onclick="adminTab('adminOrders')">All Orders</button>
+  <button onclick="adminTab('adminTickets')">Support Tickets</button>
+  <button onclick="adminTab('adminWallet')">Wallet Credit</button>
+ </div>
 
-<label>Requirements</label>
-<textarea id="orderDetails" rows="4" placeholder="Describe your design, editing or consultation requirements" required></textarea>
+ <div id="adminOrders" class="card">
+  <h3>All Orders</h3>
+  <button onclick="loadAdminOrders()">Refresh</button>
+  <div id="adminOrdersList"></div>
+ </div>
 
-<button class="btn" type="submit">Submit Order</button>
-</form>
-<p id="orderMessage" class="status"></p>
-</div>
+ <div id="adminTickets" class="card hidden">
+  <h3>All Support Tickets</h3>
+  <button onclick="loadAdminTickets()">Refresh</button>
+  <div id="adminTicketsList"></div>
+ </div>
 
-<div class="card">
-<h2>My Orders</h2>
-<div id="orderHistory">Loading...</div>
-</div>
+ <div id="adminWallet" class="card hidden">
+  <h3>Add Wallet Transaction</h3>
+  <p class="small">Only credit after verifying payment independently.</p>
+  <input id="creditUserId" placeholder="Customer User ID (UUID)">
+  <input id="creditAmount" type="number" min="1" placeholder="Amount ₹">
+  <input id="creditReference" placeholder="Payment reference / UTR">
+  <button onclick="addWalletCredit()">Add Verified Credit</button>
+ </div>
 
-<div class="card">
-<h2>Wallet History</h2>
-<p class="small">This section shows verified transaction records only. No money can be added from this demo.</p>
-<div id="walletHistory">Loading...</div>
-</div>
-
-<div class="card">
-<h2>Customer Support</h2>
-<form id="supportForm">
-<label>Subject</label>
-<input id="supportSubject" required placeholder="Enter subject">
-<label>Message</label>
-<textarea id="supportMessage" required rows="3" placeholder="How can we help?"></textarea>
-<button class="btn" type="submit">Send Message</button>
-</form>
-<p id="supportStatus"></p>
-</div>
-
-<button class="btn" onclick="logout()">Logout</button>
 </section>
+</div>
 
-<footer>© 2026 SMM PANNAL | All Rights Reserved</footer>
+<footer>SMM PANNAL © 2026</footer>
 
 <script>
 const SUPABASE_URL = "https://xaemcfpghkcpjmgakejf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_7dMJNKE5WWQlDIQG0l-pGw_R_2wubTq";
 
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const db = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
 
 let currentUser = null;
-let authMode = "signup";
+let currentRole = "customer";
+let servicesCache = [];
 
-function show(id){
- ["home","auth","dashboard"].forEach(x=>{
+function msg(text){
+ const box=document.getElementById("message");
+ box.textContent=text;
+ box.classList.remove("hidden");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function clearMsg(){
+ document.getElementById("message").classList.add("hidden");
+}
+
+function showBox(id){
+ ["loginBox","signupBox","forgotBox","resetBox"].forEach(x=>{
   document.getElementById(x).classList.add("hidden");
  });
  document.getElementById(id).classList.remove("hidden");
- window.scrollTo(0,0);
 }
 
-function goHome(){show("home");}
+function openTab(id,btn){
+ document.querySelectorAll(".tabContent").forEach(x=>x.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));
+ if(btn)btn.classList.add("active");
 
-function showAuth(mode){
- authMode=mode;
- show("auth");
- document.getElementById("authTitle").innerText=mode==="signup"?"Create Account":"Customer Login";
- document.getElementById("authBtn").innerText=mode==="signup"?"Create Account":"Login";
- document.getElementById("nameBox").classList.toggle("hidden",mode==="login");
- document.getElementById("switchText").innerHTML=mode==="signup"
- ?'Already have an account? <a href="#" onclick="showAuth(\'login\');return false">Login</a>'
- :'New customer? <a href="#" onclick="showAuth(\'signup\');return false">Create Account</a>';
- document.getElementById("authMessage").innerText="";
+ if(id==="servicesTab")loadServices();
+ if(id==="historyTab")loadOrders();
+ if(id==="walletTab")loadWallet();
+ if(id==="supportTab")loadTickets();
 }
 
-async function authenticate(){
- const email=document.getElementById("email").value.trim();
- const password=document.getElementById("password").value;
- const name=document.getElementById("fullName").value.trim();
- const msg=document.getElementById("authMessage");
-
- if(!email||!password){msg.innerText="Enter email and password.";return;}
- if(password.length<8){msg.innerText="Password must be at least 8 characters.";return;}
- if(authMode==="signup"&&!name){msg.innerText="Enter your full name.";return;}
-
- msg.innerText="Please wait...";
-
- try{
-  if(authMode==="signup"){
-   const {data,error}=await db.auth.signUp({
-    email,password,
-    options:{
-     data:{full_name:name},
-     emailRedirectTo:location.origin+location.pathname
-    }
-   });
-   if(error)throw error;
-   msg.innerText=data.session
-    ?"Account created. You can now continue."
-    :"Signup successful! Check your email and confirm your account before login.";
-  }else{
-   const {error}=await db.auth.signInWithPassword({email,password});
-   if(error)throw error;
-   msg.innerText="Login successful!";
-  }
- }catch(e){msg.innerText=e.message;}
+function adminTab(id){
+ ["adminOrders","adminTickets","adminWallet"].forEach(x=>{
+  document.getElementById(x).classList.add("hidden");
+ });
+ document.getElementById(id).classList.remove("hidden");
+ if(id==="adminOrders")loadAdminOrders();
+ if(id==="adminTickets")loadAdminTickets();
 }
 
-async function loadServices(){
- const select = document.getElementById("serviceSelect");
+async function signup(){
+ clearMsg();
+ const name=document.getElementById("signupName").value.trim();
+ const email=document.getElementById("signupEmail").value.trim();
+ const password=document.getElementById("signupPassword").value;
 
- const {data,error} = await db
-  .from("services")
-  .select("id,name,platform,description,price")
-  .eq("active",true)
-  .order("name");
-
- if(error){
-  console.error("Services Error:",error);
-  select.innerHTML =
-   '<option value="">Error: '+error.message+'</option>';
+ if(!name||!email||password.length<6){
+  msg("Enter name, valid email and password of at least 6 characters.");
   return;
  }
 
- if(!data || data.length === 0){
-  select.innerHTML =
-   '<option value="">No active services found</option>';
-  return;
+ const {data,error}=await db.auth.signUp({
+  email,password,
+  options:{data:{full_name:name}}
+ });
+
+ if(error){msg(error.message);return;}
+
+ if(data.user && data.session){
+  await db.from("profiles").upsert({
+   id:data.user.id,
+   full_name:name
+  },{onConflict:"id"});
  }
 
- select.innerHTML =
-  '<option value="">Choose a service</option>';
-
- data.forEach(s=>{
-  const opt=document.createElement("option");
-  opt.value=s.id;
-  opt.textContent=
-   s.platform+" - "+s.name+" (₹"+s.price+")";
-  select.appendChild(opt);
- });
+ msg("Account created. If email confirmation is enabled, verify your email before login.");
+ showBox("loginBox");
 }
 
-async function loadOrders(){
- const {data,error}=await db.from("orders")
-  .select("id,service_id,target_url,details,status,created_at")
-  .eq("user_id",currentUser.id)
-  .order("created_at",{ascending:false});
+async function login(){
+ clearMsg();
+ const email=document.getElementById("loginEmail").value.trim();
+ const password=document.getElementById("loginPassword").value;
 
- const box=document.getElementById("orderHistory");
- if(error){box.innerText="Could not load orders.";return;}
- document.getElementById("orderCount").innerText=(data||[]).length;
- box.innerHTML="";
- if(!data||!data.length){box.innerText="No orders yet.";return;}
-
- data.forEach(o=>{
-  const div=document.createElement("div");
-  div.className="item";
-  const title=document.createElement("b");
-  title.textContent="Order #"+o.id.slice(0,8);
-  const status=document.createElement("p");
-  status.textContent="Status: "+o.status;
-  const details=document.createElement("p");
-  details.textContent=o.details;
-  div.append(title,status,details);
-  box.appendChild(div);
- });
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){msg(error.message);return;}
+ await startApp(data.user);
 }
 
-async function loadWallet(){
- const {data,error}=await db.from("wallet_transactions")
-  .select("id,amount,transaction_type,created_at")
-  .eq("user_id",currentUser.id)
-  .order("created_at",{ascending:false});
+async function forgotPassword(){
+ clearMsg();
+ const email=document.getElementById("forgotEmail").value.trim();
+ if(!email){msg("Enter your registered email.");return;}
 
- const box=document.getElementById("walletHistory");
- if(error){box.innerText="Could not load wallet history.";return;}
- document.getElementById("walletCount").innerText=(data||[]).length;
- box.innerHTML="";
- if(!data||!data.length){box.innerText="No transactions yet.";return;}
-
- data.forEach(t=>{
-  const div=document.createElement("div");
-  div.className="item";
-  div.textContent=t.transaction_type+" - ₹"+t.amount;
-  box.appendChild(div);
+ const {error}=await db.auth.resetPasswordForEmail(email,{
+  redirectTo:"https://smmpannal.github.io/smmpannal/"
  });
+
+ if(error){msg(error.message);return;}
+ msg("If this email is registered, a password reset link will be sent. Check your inbox.");
 }
 
-document.getElementById("orderForm").addEventListener("submit",async e=>{
- e.preventDefault();
- const msg=document.getElementById("orderMessage");
- msg.innerText="Submitting...";
+async function updatePassword(){
+ const password=document.getElementById("newPassword").value;
+ if(password.length<6){msg("Password must be at least 6 characters.");return;}
 
- const {error}=await db.from("orders").insert({
-  user_id:currentUser.id,
-  service_id:document.getElementById("serviceSelect").value,
-  target_url:document.getElementById("targetUrl").value.trim(),
-  details:document.getElementById("orderDetails").value.trim()
- });
+ const {error}=await db.auth.updateUser({password});
+ if(error){msg(error.message);return;}
 
- if(error){msg.innerText="Error: "+error.message;return;}
- msg.innerText="Order submitted successfully!";
- e.target.reset();
- await loadOrders();
-});
-
-document.getElementById("supportForm").addEventListener("submit",async e=>{
- e.preventDefault();
- const msg=document.getElementById("supportStatus");
- msg.innerText="Sending...";
-
- const {error}=await db.from("support_tickets").insert({
-  user_id:currentUser.id,
-  subject:document.getElementById("supportSubject").value.trim(),
-  message:document.getElementById("supportMessage").value.trim()
- });
-
- if(error){msg.innerText="Error: "+error.message;return;}
- msg.innerText="Support message submitted!";
- e.target.reset();
-});
-
-async function openDashboard(user){
- currentUser=user;
- document.getElementById("welcome").innerText="Welcome, "+(user.user_metadata?.full_name||user.email);
- document.getElementById("navUser").innerText=user.email;
- show("dashboard");
- await Promise.all([loadServices(),loadOrders(),loadWallet()]);
+ msg("Password updated. Please login with your new password.");
+ await logout();
+ showBox("loginBox");
 }
 
 async function logout(){
  await db.auth.signOut();
  currentUser=null;
- document.getElementById("navUser").innerText="Welcome";
- show("home");
+ currentRole="customer";
+ document.getElementById("dashboard").classList.add("hidden");
+ document.getElementById("adminSection").classList.add("hidden");
+ document.getElementById("authSection").classList.remove("hidden");
+ document.getElementById("logoutBtn").classList.add("hidden");
+ showBox("loginBox");
+}
+
+async function startApp(user){
+ currentUser=user;
+ clearMsg();
+
+ const {data:profile,error}=await db
+  .from("profiles")
+  .select("id,full_name,role")
+  .eq("id",user.id)
+  .maybeSingle();
+
+ if(error){msg("Profile error: "+error.message);return;}
+
+ if(!profile){
+  const {error:insertError}=await db.from("profiles").insert({
+   id:user.id,
+   full_name:user.user_metadata?.full_name || "Customer"
+  });
+  if(insertError){msg("Profile setup error: "+insertError.message);return;}
+  currentRole="customer";
+ }else{
+  currentRole=profile.role || "customer";
+ }
+
+ document.getElementById("customerName").textContent=
+  profile?.full_name || user.user_metadata?.full_name || "Customer";
+
+ document.getElementById("authSection").classList.add("hidden");
+ document.getElementById("dashboard").classList.remove("hidden");
+ document.getElementById("logoutBtn").classList.remove("hidden");
+
+ if(currentRole==="admin"){
+  document.getElementById("adminSection").classList.remove("hidden");
+  loadAdminOrders();
+ }
+
+ await loadServices();
+ await loadWallet();
+}
+
+async function loadServices(){
+ const select=document.getElementById("serviceSelect");
+ const list=document.getElementById("servicesList");
+
+ const {data,error}=await db.from("services")
+  .select("id,name,platform,description,price")
+  .eq("active",true).order("name");
+
+ if(error){
+  select.innerHTML='<option>Error loading services</option>';
+  list.textContent="Services error: "+error.message;
+  return;
+ }
+
+ servicesCache=data||[];
+ select.innerHTML='<option value="">Choose a service</option>';
+ list.innerHTML="";
+
+ if(!servicesCache.length){
+  list.textContent="No active services found.";
+  return;
+ }
+
+ servicesCache.forEach(s=>{
+  const opt=document.createElement("option");
+  opt.value=s.id;
+  opt.textContent=s.platform+" - "+s.name+" (₹"+s.price+")";
+  select.appendChild(opt);
+
+  const item=document.createElement("div");
+  item.className="item";
+  const title=document.createElement("strong");
+  title.textContent=s.name+" - "+s.platform;
+  const desc=document.createElement("p");
+  desc.textContent=s.description||"";
+  const price=document.createElement("p");
+  price.className="price";
+  price.textContent="₹"+s.price;
+  item.append(title,desc,price);
+  list.appendChild(item);
+ });
+}
+
+async function placeOrder(){
+ clearMsg();
+ const serviceId=document.getElementById("serviceSelect").value;
+ const target=document.getElementById("targetUrl").value.trim();
+ const details=document.getElementById("orderDetails").value.trim();
+
+ if(!serviceId||!target||!details){
+  msg("Please complete all order fields.");
+  return;
+ }
+
+ const {error}=await db.from("orders").insert({
+  user_id:currentUser.id,
+  service_id:serviceId,
+  target_url:target,
+  details:details,
+  status:"pending"
+ });
+
+ if(error){msg("Order error: "+error.message);return;}
+
+ msg("Order submitted successfully.");
+ document.getElementById("targetUrl").value="";
+ document.getElementById("orderDetails").value="";
+ loadOrders();
+}
+
+async function loadOrders(){
+ const box=document.getElementById("ordersList");
+ box.textContent="Loading...";
+
+ const {data,error}=await db.from("orders")
+  .select("id,service_id,target_url,details,status,created_at")
+  .eq("user_id",currentUser.id)
+  .order("created_at",{ascending:false});
+
+ if(error){box.textContent=error.message;return;}
+ box.innerHTML="";
+
+ if(!data?.length){box.textContent="No orders yet.";return;}
+
+ data.forEach(o=>{
+  const item=document.createElement("div");
+  item.className="item";
+  item.textContent="Order: "+o.id+
+   " | Service: "+o.service_id+
+   " | Status: "+o.status+
+   " | URL: "+o.target_url+
+   " | Date: "+new Date(o.created_at).toLocaleString();
+  box.appendChild(item);
+ });
+}
+
+async function loadWallet(){
+ const {data,error}=await db.from("wallet_transactions")
+  .select("amount,transaction_type,payment_reference,created_at")
+  .eq("user_id",currentUser.id)
+  .order("created_at",{ascending:false});
+
+ if(error){msg("Wallet error: "+error.message);return;}
+
+ let balance=0;
+ const box=document.getElementById("walletList");
+ box.innerHTML="";
+
+ (data||[]).forEach(t=>{
+  const amount=Number(t.amount)||0;
+  const type=(t.transaction_type||"").toLowerCase();
+  if(["credit","add","deposit"].includes(type))balance+=amount;
+  else balance-=amount;
+
+  const item=document.createElement("div");
+  item.className="item";
+  item.textContent=t.transaction_type+" ₹"+amount+
+   " | "+(t.payment_reference||"No reference")+
+   " | "+new Date(t.created_at).toLocaleString();
+  box.appendChild(item);
+ });
+
+ document.getElementById("walletBalance").textContent="₹"+balance.toFixed(2);
+ document.getElementById("walletAmount").textContent="₹"+balance.toFixed(2);
+
+ if(!data?.length)box.textContent="No wallet transactions yet.";
+}
+
+async function createTicket(){
+ const subject=document.getElementById("ticketSubject").value.trim();
+ const message=document.getElementById("ticketMessage").value.trim();
+
+ if(!subject||!message){msg("Enter ticket subject and message.");return;}
+
+ const {error}=await db.from("support_tickets").insert({
+  user_id:currentUser.id,subject,message,status:"open"
+ });
+
+ if(error){msg(error.message);return;}
+ msg("Support ticket submitted.");
+ document.getElementById("ticketSubject").value="";
+ document.getElementById("ticketMessage").value="";
+ loadTickets();
+}
+
+async function loadTickets(){
+ const box=document.getElementById("ticketsList");
+ box.textContent="Loading...";
+
+ const {data,error}=await db.from("support_tickets")
+  .select("id,subject,message,status,created_at")
+  .eq("user_id",currentUser.id)
+  .order("created_at",{ascending:false});
+
+ if(error){box.textContent=error.message;return;}
+ box.innerHTML="";
+
+ if(!data?.length){box.textContent="No support tickets.";return;}
+
+ data.forEach(t=>{
+  const item=document.createElement("div");
+  item.className="item";
+  item.textContent=t.subject+" | "+t.status+" | "+t.message;
+  box.appendChild(item);
+ });
+}
+
+async function loadAdminOrders(){
+ const box=document.getElementById("adminOrdersList");
+ box.textContent="Loading orders...";
+
+ const {data,error}=await db.from("orders")
+  .select("*").order("created_at",{ascending:false});
+
+ if(error){box.textContent=error.message;return;}
+ box.innerHTML="";
+
+ if(!data?.length){box.textContent="No orders found.";return;}
+
+ data.forEach(o=>{
+  const item=document.createElement("div");
+  item.className="item";
+
+  const info=document.createElement("p");
+  info.textContent="Order ID: "+o.id+
+   " | Customer ID: "+o.user_id+
+   " | Service ID: "+o.service_id+
+   " | URL: "+o.target_url+
+   " | Details: "+o.details+
+   " | Status: "+o.status;
+
+  const select=document.createElement("select");
+  ["pending","processing","completed","cancelled"].forEach(status=>{
+   const opt=document.createElement("option");
+   opt.value=status;opt.textContent=status;
+   if(status===o.status)opt.selected=true;
+   select.appendChild(opt);
+  });
+
+  const save=document.createElement("button");
+  save.textContent="Update Status";
+  save.onclick=()=>updateOrderStatus(o.id,select.value);
+
+  item.append(info,select,save);
+  box.appendChild(item);
+ });
+}
+
+async function updateOrderStatus(id,status){
+ const {error}=await db.from("orders")
+  .update({status}).eq("id",id);
+
+ if(error){msg(error.message);return;}
+ msg("Order status updated.");
+ loadAdminOrders();
+}
+
+async function loadAdminTickets(){
+ const box=document.getElementById("adminTicketsList");
+ box.textContent="Loading tickets...";
+
+ const {data,error}=await db.from("support_tickets")
+  .select("*").order("created_at",{ascending:false});
+
+ if(error){box.textContent=error.message;return;}
+ box.innerHTML="";
+
+ if(!data?.length){box.textContent="No tickets found.";return;}
+
+ data.forEach(t=>{
+  const item=document.createElement("div");
+  item.className="item";
+
+  const info=document.createElement("p");
+  info.textContent="Ticket: "+t.id+" | User: "+t.user_id+
+   " | "+t.subject+" | "+t.message+" | "+t.status;
+
+  const select=document.createElement("select");
+  ["open","in progress","closed"].forEach(s=>{
+   const opt=document.createElement("option");
+   opt.value=s;opt.textContent=s;
+   if(s===t.status)opt.selected=true;
+   select.appendChild(opt);
+  });
+
+  const save=document.createElement("button");
+  save.textContent="Update Ticket";
+  save.onclick=async()=>{
+   const {error}=await db.from("support_tickets")
+    .update({status:select.value}).eq("id",t.id);
+   if(error){msg(error.message);return;}
+   msg("Ticket updated.");
+   loadAdminTickets();
+  };
+
+  item.append(info,select,save);
+  box.appendChild(item);
+ });
+}
+
+async function addWalletCredit(){
+ const userId=document.getElementById("creditUserId").value.trim();
+ const amount=Number(document.getElementById("creditAmount").value);
+ const reference=document.getElementById("creditReference").value.trim();
+
+ if(!userId||!Number.isFinite(amount)||amount<=0||!reference){
+  msg("Enter valid customer ID, amount and payment reference.");
+  return;
+ }
+
+ const {error}=await db.from("wallet_transactions").insert({
+  user_id:userId,
+  amount:amount,
+  transaction_type:"credit",
+  payment_reference:reference
+ });
+
+ if(error){msg("Wallet credit error: "+error.message);return;}
+
+ msg("Wallet credit transaction added.");
+ document.getElementById("creditUserId").value="";
+ document.getElementById("creditAmount").value="";
+ document.getElementById("creditReference").value="";
 }
 
 db.auth.onAuthStateChange((event,session)=>{
- if(session?.user){
-  currentUser=session.user;
-  openDashboard(session.user);
- }else if(event==="SIGNED_OUT"){
-  currentUser=null;
-  show("home");
- }
+ if(event==="PASSWORD_RECOVERY"){
+  document.getElementById("authSection").classList.remove("hidden");
+document.getElementById("dashboard").classList.add("hidden");
+document.getElementById("adminSection").classList.add("hidden");
+showBox("resetBox");
+}
 });
 
-(async()=>{
+(async function(){
  const {data}=await db.auth.getSession();
- if(data.session?.user) await openDashboard(data.session.user);
+ if(data.session){
+  await startApp(data.session.user);
+ }
 })();
 </script>
 </body>
