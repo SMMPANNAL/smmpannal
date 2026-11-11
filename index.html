@@ -1,6 +1,5 @@
-
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,629 +7,275 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#f2f5fb;color:#17233b}
-header{background:#142b55;color:white;padding:18px;text-align:center}
-main{max-width:850px;margin:20px auto;padding:12px}
-.card{background:white;padding:18px;border-radius:12px;margin:14px 0;box-shadow:0 2px 10px #0001}
-input,select,textarea,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccd3df;border-radius:7px;font-size:15px}
-button{background:#155bd5;color:white;border:0;font-weight:bold;cursor:pointer}
+body{margin:0;font-family:Arial;background:#f1f5fb;color:#17233b}
+header{background:#142b55;color:white;padding:22px;text-align:center}
+main{max-width:900px;margin:auto;padding:15px}
+.card{background:white;padding:18px;margin:14px 0;border-radius:12px;box-shadow:0 3px 12px #0001}
+input,button,textarea,select{width:100%;padding:13px;margin:7px 0;border:1px solid #ccd3df;border-radius:8px}
+button{background:#155bd5;color:white;border:0;font-weight:bold}
 button.secondary{background:#52627a}
-button.danger{background:#bd3030}
 .hidden{display:none}
+nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 h2{color:#17427e}
-.item{border-bottom:1px solid #ddd;padding:12px 0;overflow-wrap:anywhere}
-small{color:#64748b}
-#message{padding:10px;color:#17427e}
+.item{padding:12px;border-bottom:1px solid #ddd}
 </style>
 </head>
 <body>
 <header>
 <h1>SMM PANNAL</h1>
-<p>Social Media Services Panel</p>
+<p>Your Social Media Creator Platform</p>
 </header>
-
 <main>
-<div id="message"></div>
 
-<section id="authSection" class="card">
-<h2>Login</h2>
-<input id="loginEmail" type="email" placeholder="Email">
-<input id="loginPassword" type="password" placeholder="Password">
+<div id="home" class="card">
+<h2>Welcome to SMM PANNAL</h2>
+<p>Choose your login</p>
+<button onclick="openLogin('customer')">Customer Login</button>
+<button onclick="openLogin('admin')">Admin Login</button>
+</div>
+
+<div id="loginPage" class="card hidden">
+<h2 id="loginTitle">Login</h2>
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
 <button onclick="login()">Login</button>
-<button class="secondary" onclick="showSignup()">Create Account</button>
-<button class="secondary" onclick="forgotPassword()">Forgot Password</button>
-
-<div id="signupBox" class="hidden">
-<h2>Signup</h2>
-<input id="signupName" placeholder="Full Name">
-<input id="signupEmail" type="email" placeholder="Email">
-<input id="signupPassword" type="password" placeholder="Password">
-<button onclick="signup()">Create Account</button>
+<button class="secondary" onclick="signup()">Create Customer Account</button>
+<button class="secondary" onclick="forgot()">Forgot Password</button>
+<button class="secondary" onclick="goHome()">Back</button>
 </div>
 
-<div id="resetBox" class="hidden">
-<h2>New Password</h2>
-<input id="newPassword" type="password" placeholder="New Password">
-<button onclick="updatePassword()">Update Password</button>
-</div>
-</section>
-
-<section id="dashboard" class="hidden">
+<div id="customerPage" class="hidden">
 <div class="card">
 <h2>Customer Dashboard</h2>
-<p id="welcome"></p>
-<button class="secondary" onclick="logout()">Logout</button>
+<p id="customerName"></p>
+<nav>
+<button onclick="page('services')">Services</button>
+<button onclick="page('orders')">My Orders</button>
+<button onclick="page('ai')">AI Studio</button>
+<button onclick="page('support')">Help & Support</button>
+<button onclick="page('wallet')">Wallet</button>
+<button onclick="logout()">Logout</button>
+</nav>
+</div>
+<div id="customerContent" class="card"></div>
 </div>
 
+<div id="adminPage" class="hidden">
 <div class="card">
-<h2>Available Services</h2>
-<div id="servicesList">Loading...</div>
+<h2>Admin Dashboard</h2>
+<p>Administrator Panel</p>
+<nav>
+<button onclick="adminPage('orders')">Manage Orders</button>
+<button onclick="adminPage('services')">Manage Services</button>
+<button onclick="adminPage('tickets')">Support Tickets</button>
+<button onclick="adminPage('payments')">Payment Requests</button>
+<button onclick="logout()">Logout</button>
+</nav>
+</div>
+<div id="adminContent" class="card"></div>
 </div>
 
-<div class="card">
-<h2>Place New Order</h2>
-<select id="serviceSelect">
-<option value="">Select Service</option>
-</select>
-<input id="targetUrl" placeholder="Instagram / YouTube Link">
-<textarea id="orderDetails" placeholder="Order details"></textarea>
-<button onclick="placeOrder()">Submit Order</button>
-</div>
-
-<div class="card">
-<h2>My Orders</h2>
-<div id="myOrders">Loading...</div>
-</div>
-
-<div class="card">
-<h2>My Wallet</h2>
-<h3 id="walletBalance">Balance: ₹0</h3>
-<div id="walletHistory"></div>
-</div>
-
-<div class="card">
-<h2>Support</h2>
-<input id="ticketSubject" placeholder="Subject">
-<textarea id="ticketMessage" placeholder="Write your message"></textarea>
-<button onclick="createTicket()">Submit Ticket</button>
-<div id="myTickets"></div>
-</div>
-</section>
-
-<section id="adminSection" class="hidden">
-<div class="card">
-<h2>ADMIN PANEL</h2>
-<p>Admin Dashboard</p>
-<button class="secondary" onclick="loadAdmin()">Refresh Admin Data</button>
-</div>
-
-<div class="card">
-<h2>All Orders</h2>
-<div id="adminOrders">Loading...</div>
-</div>
-
-<div class="card">
-<h2>All Support Tickets</h2>
-<div id="adminTickets">Loading...</div>
-</div>
-
-<div class="card">
-<h2>Add Wallet Credit</h2>
-<input id="creditUserId" placeholder="Customer User ID">
-<input id="creditAmount" type="number" min="1" placeholder="Amount">
-<input id="creditReference" placeholder="Payment reference / note">
-<button onclick="addCredit()">Add Credit</button>
-</div>
-</section>
-</section>
 </main>
-
 <script>
-const SUPABASE_URL = "https://xaemcfpghkcpjmgakejf.supabase.co";
-const SUPABASE_KEY = "sb_publishable_7dMJNKE5WWQlDIQG0l-pGw_R_2wubTq";
+const SUPABASE_URL="PASTE_YOUR_SUPABASE_URL_HERE";
+const SUPABASE_KEY="PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let user=null;
+let role="";
+let loginType="customer";
 
-let currentUser = null;
-let currentRole = "customer";
-
-function msg(text){
- document.getElementById("message").textContent = text;
+function openLogin(type){
+ loginType=type;
+ document.getElementById("home").classList.add("hidden");
+ document.getElementById("loginPage").classList.remove("hidden");
+ document.getElementById("loginTitle").textContent=type==="admin"?"Admin Login":"Customer Login";
 }
 
-function show(id){
- document.getElementById(id).classList.remove("hidden");
+function goHome(){
+ document.getElementById("loginPage").classList.add("hidden");
+ document.getElementById("home").classList.remove("hidden");
 }
 
-function hide(id){
- document.getElementById(id).classList.add("hidden");
-}
+function notice(t){alert(t)}
 
-function showSignup(){
- show("signupBox");
+async function login(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){notice(error.message);return}
+ await start(data.user);
 }
 
 async function signup(){
- const name = document.getElementById("signupName").value.trim();
- const email = document.getElementById("signupEmail").value.trim();
- const password = document.getElementById("signupPassword").value;
+ if(loginType!=="customer"){notice("Admin accounts are created separately.");return}
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const {data,error}=await db.auth.signUp({email,password});
+ if(error){notice(error.message);return}
+ notice("Account created. Confirm your email if required, then login.");
+}
 
- if(!name || !email || !password){
-  msg("Please fill all fields");
-  return;
- }
-
- const {data,error} = await db.auth.signUp({
-  email,password
+async function forgot(){
+ const email=document.getElementById("email").value.trim();
+ if(!email){notice("Enter your email first");return}
+ const {error}=await db.auth.resetPasswordForEmail(email,{
+  redirectTo:location.origin+location.pathname
  });
+ notice(error?error.message:"Password reset email sent.");
+}
 
- if(error){
-  msg(error.message);
-  return;
- }
-
- if(data.user && data.session){
-  const {error:profileError} = await db.from("profiles").insert({
-   id:data.user.id,
-   full_name:name,
-   role:"customer"
+async function start(u){
+ user=u;
+ const {data,error}=await db.from("profiles")
+  .select("full_name,role").eq("id",u.id).maybeSingle();
+ if(error){notice("Profile error: "+error.message);return}
+ if(!data){
+  const {error:e}=await db.from("profiles").insert({
+   id:u.id,full_name:u.email,role:"customer"
   });
-
-  if(profileError){
-   msg("Account created. Profile will be created after login.");
-  }
- }
-
- msg("Signup successful. Email confirmation may be required. Please login.");
-}
-
-async function login(){
- const email = document.getElementById("loginEmail").value.trim();
- const password = document.getElementById("loginPassword").value;
-
- const {data,error} = await db.auth.signInWithPassword({
-  email,password
- });
-
- if(error){
-  msg(error.message);
-  return;
- }
-
- await startApp(data.user);
-}
-
-async function forgotPassword(){
- const email = document.getElementById("loginEmail").value.trim();
-
- if(!email){
-  msg("Enter your email first");
-  return;
- }
-
- const {error} = await db.auth.resetPasswordForEmail(email,{
-  redirectTo:"https://smmpannal.github.io/smmpannal/"
- });
-
- if(error) msg(error.message);
- else msg("Password reset email sent.");
-}
-
-async function updatePassword(){
- const password = document.getElementById("newPassword").value;
-
- if(password.length < 6){
-  msg("Password must be at least 6 characters");
-  return;
- }
-
- const {error} = await db.auth.updateUser({password});
-
- if(error){
-  msg(error.message);
-  return;
- }
-
- msg("Password updated. Please login again.");
- await logout();
-}
-
-async function startApp(user){
- currentUser = user;
-
- hide("authSection");
- show("dashboard");
- hide("adminSection");
-
- const {data:profile,error} = await db
-  .from("profiles")
-  .select("id,full_name,role")
-  .eq("id",user.id)
-  .maybeSingle();
-
- if(error){
-  msg("Profile error: " + error.message);
-  return;
- }
-
- if(!profile){
-  const {error:insertError} = await db.from("profiles").insert({
-   id:user.id,
-   full_name:user.email,
-   role:"customer"
-  });
-
-  if(insertError){
-   msg("Profile create error: " + insertError.message);
-   return;
-  }
-
-  currentRole = "customer";
-  document.getElementById("welcome").textContent =
-   "Welcome " + user.email;
+  if(e){notice(e.message);return}
+  role="customer";
  }else{
-  currentRole = profile.role || "customer";
-  document.getElementById("welcome").textContent =
-   "Welcome " + (profile.full_name || user.email);
+  role=data.role||"customer";
+ }
+ document.getElementById("home").classList.add("hidden");
+ document.getElementById("loginPage").classList.add("hidden");
+
+ if(loginType==="admin" && role!=="admin"){
+  notice("This account is not an admin account.");
+  await logout();
+  return;
  }
 
- msg("Your Role: " + currentRole);
-
- if(currentRole === "admin"){
-  show("adminSection");
-  await loadAdmin();
+ if(role==="admin"){
+  document.getElementById("adminPage").classList.remove("hidden");
+  adminPage("orders");
+ }else{
+  document.getElementById("customerPage").classList.remove("hidden");
+  document.getElementById("customerName").textContent="Welcome "+u.email;
+  page("services");
  }
+}
 
- await loadServices();
- await loadOrders();
- await loadWallet();
- await loadTickets();
+function page(name){
+ const box=document.getElementById("customerContent");
+ box.innerHTML="";
+ if(name==="services"){
+  box.innerHTML="<h2>Services</h2><div id='serviceList'>Loading...</div>";
+  loadServices();
+ }
+ if(name==="orders"){
+  box.innerHTML="<h2>My Orders</h2><div id='orderList'>Loading...</div>";
+  loadOrders();
+ }
+ if(name==="ai"){
+  box.innerHTML="<h2>AI Studio</h2><h3>AI Thumbnail Maker</h3><input id='topic' placeholder='Enter video topic'><button onclick='notice(\"AI image generation will be connected through a secure AI service.\")'>Create Thumbnail</button><h3>AI Video Editor</h3><p>Video editing tools will be connected here.</p><h3>Photo to Video</h3><p>AI photo animation tools will be connected here.</p><h3>AI Caption Maker</h3><textarea id='captionTopic' placeholder='Enter your topic'></textarea><button onclick='notice(\"AI caption service will be connected next.\")'>Generate Caption</button>";
+ }
+ if(name==="support"){
+  box.innerHTML="<h2>Help & Support</h2><input id='subject' placeholder='Subject'><textarea id='ticket' placeholder='Message'></textarea><button onclick='sendTicket()'>Send Ticket</button>";
+ }
+ if(name==="wallet"){
+  box.innerHTML="<h2>Wallet</h2><p>Wallet history</p><div id='walletList'>Loading...</div>";
+  loadWallet();
+ }
 }
 
 async function loadServices(){
- const {data,error} = await db
-  .from("services")
-  .select("*")
-  .eq("active",true)
-  .order("created_at");
-
- if(error){
-  document.getElementById("servicesList").textContent=error.message;
-  return;
- }
-
- const list = document.getElementById("servicesList");
- const select = document.getElementById("serviceSelect");
-
- list.innerHTML="";
- select.innerHTML='<option value="">Select Service</option>';
-
- (data || []).forEach(s=>{
-  const option=document.createElement("option");
-  option.value=s.id;
-  option.textContent=s.name+" - ₹"+s.price;
-  select.appendChild(option);
-
-  const div=document.createElement("div");
-  div.className="item";
-  div.textContent=s.name+" | "+s.platform+" | ₹"+s.price;
-  list.appendChild(div);
+ const {data,error}=await db.from("services").select("*").eq("active",true);
+ const box=document.getElementById("serviceList");
+ if(error){box.textContent=error.message;return}
+ box.innerHTML="";
+ (data||[]).forEach(s=>{
+  const d=document.createElement("div");
+  d.className="item";
+  d.textContent=s.name+" | "+s.platform+" | ₹"+s.price;
+  box.appendChild(d);
  });
-
- if(!data || !data.length) list.textContent="No active services available.";
-}
-
-async function placeOrder(){
- const service_id=document.getElementById("serviceSelect").value;
- const target_url=document.getElementById("targetUrl").value.trim();
- const details=document.getElementById("orderDetails").value.trim();
-
- if(!service_id || !target_url){
-  msg("Select service and enter link");
-  return;
- }
-
- const {error}=await db.from("orders").insert({
-  user_id:currentUser.id,
-  service_id,
-  target_url,
-  details,
-  status:"pending"
- });
-
- if(error){
-  msg("Order error: "+error.message);
-  return;
- }
-
- msg("Order submitted successfully");
- document.getElementById("targetUrl").value="";
- document.getElementById("orderDetails").value="";
- await loadOrders();
+ if(!data?.length)box.textContent="No services available.";
 }
 
 async function loadOrders(){
- const {data,error}=await db.from("orders")
-  .select("id,target_url,details,status,created_at")
-  .eq("user_id",currentUser.id)
-  .order("created_at",{ascending:false});
-
- const box=document.getElementById("myOrders");
+ const {data,error}=await db.from("orders").select("*")
+ .eq("user_id",user.id).order("created_at",{ascending:false});
+ const box=document.getElementById("orderList");
+ if(error){box.textContent=error.message;return}
  box.innerHTML="";
-
- if(error){
-  box.textContent=error.message;
-  return;
- }
-
- (data || []).forEach(o=>{
-  const div=document.createElement("div");
-  div.className="item";
-  div.textContent="Order: "+o.id+" | "+o.status+" | "+o.target_url;
-  box.appendChild(div);
+ (data||[]).forEach(o=>{
+  const d=document.createElement("div");
+  d.className="item";
+  d.textContent=o.target_url+" | "+o.status;
+  box.appendChild(d);
  });
-
- if(!data || !data.length) box.textContent="No orders yet.";
 }
 
 async function loadWallet(){
- const {data,error}=await db.from("wallet_transactions")
-  .select("*")
-  .eq("user_id",currentUser.id)
-  .order("created_at",{ascending:false});
-
- const box=document.getElementById("walletHistory");
+ const {data,error}=await db.from("wallet_transactions").select("*")
+ .eq("user_id",user.id).order("created_at",{ascending:false});
+ const box=document.getElementById("walletList");
+ if(error){box.textContent=error.message;return}
  box.innerHTML="";
-
- if(error){
-  box.textContent=error.message;
-  return;
- }
-
- let balance=0;
-
- (data || []).forEach(t=>{
-  const amount=Number(t.amount)||0;
-  const type=(t.transaction_type||"").toLowerCase();
-
-  if(["credit","add","deposit"].includes(type)){
-   balance+=amount;
-  }else{
-   balance-=amount;
-  }
-
-  const div=document.createElement("div");
-  div.className="item";
-  div.textContent=t.transaction_type+" : ₹"+amount;
-  box.appendChild(div);
+ (data||[]).forEach(t=>{
+  const d=document.createElement("div");
+  d.className="item";
+  d.textContent=t.transaction_type+" | ₹"+t.amount;
+  box.appendChild(d);
  });
-
- document.getElementById("walletBalance").textContent="Balance: ₹"+balance;
- if(!data || !data.length) box.textContent="No wallet transactions.";
 }
 
-async function createTicket(){
- const subject=document.getElementById("ticketSubject").value.trim();
- const message=document.getElementById("ticketMessage").value.trim();
-
- if(!subject || !message){
-  msg("Enter subject and message");
-  return;
- }
-
+async function sendTicket(){
+ const subject=document.getElementById("subject").value.trim();
+ const message=document.getElementById("ticket").value.trim();
+ if(!subject||!message){notice("Fill both fields");return}
  const {error}=await db.from("support_tickets").insert({
-  user_id:currentUser.id,
-  subject,
-  message,
-  status:"open"
+  user_id:user.id,subject,message,status:"open"
  });
-
- if(error){
-  msg(error.message);
-  return;
- }
-
- msg("Support ticket submitted");
- document.getElementById("ticketSubject").value="";
- document.getElementById("ticketMessage").value="";
- await loadTickets();
+ notice(error?error.message:"Ticket submitted");
 }
 
-async function loadTickets(){
- const {data,error}=await db.from("support_tickets")
-  .select("*")
-  .eq("user_id",currentUser.id)
-  .order("created_at",{ascending:false});
+async function adminPage(name){
+ const box=document.getElementById("adminContent");
+ box.innerHTML="<h2>"+name+"</h2>";
+ if(role!=="admin"){box.textContent="Admin access required";return}
 
- const box=document.getElementById("myTickets");
- box.innerHTML="";
-
- if(error){
-  box.textContent=error.message;
-  return;
- }
-
- (data || []).forEach(t=>{
-  const div=document.createElement("div");
-  div.className="item";
-  div.textContent=t.subject+" | "+t.status;
-  box.appendChild(div);
- });
-
- if(!data || !data.length) box.textContent="No tickets yet.";
-}
-
-async function loadAdmin(){
- if(currentRole !== "admin") return;
-
- await loadAdminOrders();
- await loadAdminTickets();
-}
-
-async function loadAdminOrders(){
- const box=document.getElementById("adminOrders");
- box.innerHTML="Loading...";
-
- const {data,error}=await db.from("orders")
-  .select("*")
-  .order("created_at",{ascending:false});
-
- box.innerHTML="";
-
- if(error){
-  box.textContent=error.message;
-  return;
- }
-
- (data || []).forEach(o=>{
-  const div=document.createElement("div");
-  div.className="item";
-
-  const info=document.createElement("p");
-  info.textContent="Order ID: "+o.id+" | User: "+o.user_id+
-   " | Link: "+o.target_url+" | Status: "+o.status;
-
-  const select=document.createElement("select");
-  ["pending","processing","completed","cancelled"].forEach(status=>{
-   const op=document.createElement("option");
-   op.value=status;
-   op.textContent=status;
-   if(status===o.status) op.selected=true;
-   select.appendChild(op);
+ if(name==="orders"){
+  const {data,error}=await db.from("orders").select("*").order("created_at",{ascending:false});
+  if(error){box.textContent=error.message;return}
+  (data||[]).forEach(o=>{
+   const d=document.createElement("div");
+   d.className="item";
+   d.textContent=o.id+" | "+o.target_url+" | "+o.status;
+   box.appendChild(d);
   });
-
-  const button=document.createElement("button");
-  button.textContent="Update Status";
-  button.onclick=()=>updateOrder(o.id,select.value);
-
-  div.append(info,select,button);
-  box.appendChild(div);
- });
-
- if(!data || !data.length) box.textContent="No orders.";
-}
-
-async function updateOrder(id,status){
- const {error}=await db.from("orders")
-  .update({status})
-  .eq("id",id);
-
- if(error) msg(error.message);
- else{
-  msg("Order status updated");
-  await loadAdminOrders();
  }
-}
-
-async function loadAdminTickets(){
- const box=document.getElementById("adminTickets");
- box.innerHTML="Loading...";
-
- const {data,error}=await db.from("support_tickets")
-  .select("*")
-  .order("created_at",{ascending:false});
-
- box.innerHTML="";
-
- if(error){
-  box.textContent=error.message;
-  return;
+ if(name==="services"){
+  box.innerHTML+="<p>Service management will be added after database setup.</p>";
  }
-
- (data || []).forEach(t=>{
-  const div=document.createElement("div");
-  div.className="item";
-
-  const info=document.createElement("p");
-  info.textContent=t.subject+" | "+t.message+" | User: "+t.user_id;
-
-  const select=document.createElement("select");
-  ["open","in_progress","closed"].forEach(status=>{
-   const op=document.createElement("option");
-   op.value=status;
-   op.textContent=status;
-   if(status===t.status) op.selected=true;
-   select.appendChild(op);
+ if(name==="tickets"){
+  const {data,error}=await db.from("support_tickets").select("*");
+  if(error){box.textContent=error.message;return}
+  (data||[]).forEach(t=>{
+   const d=document.createElement("div");
+   d.className="item";
+   d.textContent=t.subject+" | "+t.message+" | "+t.status;
+   box.appendChild(d);
   });
-
-  const button=document.createElement("button");
-  button.textContent="Update Ticket";
-  button.onclick=()=>updateTicket(t.id,select.value);
-
-  div.append(info,select,button);
-  box.appendChild(div);
- });
-
- if(!data || !data.length) box.textContent="No tickets.";
-}
-
-async function updateTicket(id,status){
- const {error}=await db.from("support_tickets")
-  .update({status})
-  .eq("id",id);
-
- if(error) msg(error.message);
- else{
-  msg("Ticket updated");
-  await loadAdminTickets();
  }
-}
-
-async function addCredit(){
- if(currentRole !== "admin"){
-  msg("Admin access required");
-  return;
+ if(name==="payments"){
+  box.innerHTML+="<p>Payment requests and bank details need a separate secure payment setup.</p>";
  }
-
- const user_id=document.getElementById("creditUserId").value.trim();
- const amount=Number(document.getElementById("creditAmount").value);
- const reference=document.getElementById("creditReference").value.trim();
-
- if(!user_id || !Number.isFinite(amount) || amount<=0){
-  msg("Enter valid User ID and amount");
-  return;
- }
-
- const {error}=await db.from("wallet_transactions").insert({
-  user_id,
-  amount,
-  transaction_type:"credit",
-  payment_reference:reference
- });
-
- if(error){
-  msg(error.message);
-  return;
- }
-
- msg("Credit transaction added");
- document.getElementById("creditUserId").value="";
- document.getElementById("creditAmount").value="";
- document.getElementById("creditReference").value="";
 }
 
 async function logout(){
  await db.auth.signOut();
- currentUser=null;
- currentRole="customer";
- hide("dashboard");
- hide("adminSection");
- show("authSection");
- msg("Logged out");
+ location.reload();
 }
 
-db.auth.onAuthStateChange(async(event,session)=>{
- if(event==="PASSWORD_RECOVERY"){
-  show("resetBox");
- }
-});
-
-(async function(){
+(async()=>{
  const {data}=await db.auth.getSession();
- if(data.session){
-  await startApp(data.session.user);
- }
+ if(data.session) await start(data.session.user);
 })();
 </script>
 </body>
 </html>
+
